@@ -4,7 +4,7 @@ MuraLocations
 This is a [Mura CMS](http://getmura.com) Plugin that allows content managers to add/edit Locations which can then be displayed on a Google Map. The plugin also allows for end-users to either use their current location or enter their address to obtain a list of the "closest" locations.
 
 
-## Instructions ##
+### Instructions ###
 
 Coming soon.
 
