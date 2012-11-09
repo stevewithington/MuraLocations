@@ -19,13 +19,13 @@
 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 *
 */
-	include template='plugin/config.cfm';
+	include 'plugin/config.cfm';
 </cfscript>
 <cfsavecontent variable="body">
 	<cfoutput>
 		<div style="width:650px;">
-			<h2>#HTMLEditFormat(pluginConfig.getName())#</h2>
-			<p><em>Version: #pluginConfig.getVersion()#<br />
+			<!--- <h2>#HTMLEditFormat(pluginConfig.getName())#</h2>
+			<p><em>Version: #pluginConfig.getVersion()#<br /> --->
 			Author: <a href="http://stephenwithington.com" target="_blank">Steve Withington</a></em></p>
 
 			<h3>End User License Agreement (EULA)</h3>
