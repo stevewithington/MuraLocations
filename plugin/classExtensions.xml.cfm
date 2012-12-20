@@ -231,7 +231,7 @@
 				<attribute 
 					name="displayOnAllLocationsMap"
 					label="Show on 'All Locations Map' Display Object?"
-					hint="Should this location appear on the 'Locations Map' display object? NOTE: If this location is a child of a Portal/MuraLocation, then this location WILL appear on the Portal's map IF the 'Display' setting on the Basic Tab is set to Yes."
+					hint="Should this location appear on the 'Locations Map' display object? NOTE: If this location is a child of a Folder/MuraLocation, then this location WILL appear on the Folder's map IF the 'Display' setting on the Basic Tab is set to Yes."
 					type="RadioGroup"
 					defaultValue="true"
 					required="false"
@@ -243,8 +243,8 @@
 			</attributeset>
 		</extension>
 
-		<!-- PORTAL: Mura / Location -->
-		<extension type="Portal" subType="MuraLocation">
+		<!-- FOLDER: Mura / Location -->
+		<extension type="Folder" subType="MuraLocation">
 			<attributeset name="MuraLocation Options">
 
 				<attribute
@@ -327,8 +327,8 @@
 
 				<attribute 
 					name="showChildrenOnly"
-					label="Show only children of this Portal?"
-					hint="Should this map ONLY show MuraLocations that are direct children of this Portal?"
+					label="Show only children of this Folder?"
+					hint="Should this map ONLY show MuraLocations that are direct children of this Folder?"
 					type="RadioGroup"
 					defaultValue="false"
 					required="false"

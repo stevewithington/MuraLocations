@@ -48,65 +48,45 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	public any function onPageMuraLocationBodyRender(required struct $) output=false {
 		var local = {};
 		set$(arguments.$);
-		//addScripts();
-		local.body = $.setDynamicContent($.content('body'));
+		local.$ = arguments.$;
+		local.body = local.$.setDynamicContent($.content('body'));
 		
 		// build the map, directions, etc.
 		local.places = [];
 		local.place = new Place(
-			placeName = $.content('title')
-			,latitude = $.content('latitude')
-			,longitude = $.content('longitude')
-			,streetAddress = $.content('streetAddress')
-			,addressLocality = $.content('addressLocality')
-			,addressRegion = $.content('addressRegion')
-			,postalCode = $.content('postalCode')
-			,locationNotes = $.content('locationNotes')
-			,locationTelephone = $.content('locationTelephone')
-			,locationFaxNumber = $.content('locationFaxNumber')
-			,locationEmail = $.content('locationEmail')
+			placeName = local.$.content('title')
+			,latitude = local.$.content('latitude')
+			,longitude = local.$.content('longitude')
+			,streetAddress = local.$.content('streetAddress')
+			,addressLocality = local.$.content('addressLocality')
+			,addressRegion = local.$.content('addressRegion')
+			,postalCode = local.$.content('postalCode')
+			,locationNotes = local.$.content('locationNotes')
+			,locationTelephone = local.$.content('locationTelephone')
+			,locationFaxNumber = local.$.content('locationFaxNumber')
+			,locationEmail = local.$.content('locationEmail')
 		);
 		
 		ArrayAppend(local.places, local.place.gMapPoint());
 
 		local.gMap = new GoogleMap(
 			places=local.places
-			, mapType = get$().content('mapType')
-			, displayDirections = get$().content('displayDirections')
-			, displayTravelMode = get$().content('displayTravelMode')
-			, start = get$().event('start')
-			, mapWidth = get$().content('mapWidth')
-			, mapHeight = get$().content('mapHeight')
-			, mapZoom = get$().content('mapZoom')
+			, mapType = local.$.content('mapType')
+			, displayDirections = local.$.content('displayDirections')
+			, displayTravelMode = local.$.content('displayTravelMode')
+			, start = local.$.event('start')
+			, mapWidth = local.$.content('mapWidth')
+			, mapHeight = local.$.content('mapHeight')
+			, mapZoom = local.$.content('mapZoom')
 		);
 		
 		// if you don't need anything fancy, just use this:
 		//return local.body & local.gMap.getMap();
 
-		local.outerWrapperClass = get$().event('muraMobileRequest') ? 'muraLocationOuterWrapperMobile' : 'muraLocationOuterWrapper';
+		local.outerWrapperClass = local.$.event('muraMobileRequest') ? 'muraLocationOuterWrapperMobile' : 'muraLocationOuterWrapper';
 
 		savecontent variable='local.str' {
-			WriteOutput('<div class="#local.outerWrapperClass#">');
-
-				// Content
-				WriteOutput('#local.body#');
-
-				WriteOutput('<div class="locationInfoWrapper">');
-
-					// Associated Image
-					if ( len(get$().content('fileID')) && get$().showImageInList(get$().content('fileEXT')) ) {
-						WriteOutput('<div class="locationImageWrapper"><img class="locationImage imgMed" src="#get$().content().getImageURL(size='medium')#" alt="#HTMLEditFormat(get$().content('title'))#" /></div>');
-					};
-
-					// Microdata
-					WriteOutput('#local.place.getMicrodata()#');
-
-				WriteOutput('</div>'); // @END .locationInfoWrapper
-
-				// Map
-				WriteOutput('#local.gMap.getMap()#');
-
-			WriteOutput('</div>'); // @END muraLocationOuterWrapper
+			include 'includes/muraLocationBody.cfm';
 		}; // @END local.str
 
 		return local.str;
@@ -189,7 +169,6 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	public any function onPortalMuraLocationBodyRender(required struct $) output=false {
 		var local = {};
 		set$(arguments.$);
-		//addScripts();
 		local.body = get$().setDynamicContent(get$().content('body'));
 		return local.body & dspLocationsMap(
 			mapType = get$().content('mapType')
@@ -230,8 +209,6 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		if ( StructKeyExists(arguments, '$') ) {
 			set$(arguments.$);
 		};
-		//addScripts();
-
 		if (!IsBoolean(get$().event('findLocationRequestSubmitted'))){
 			get$().event('findLocationRequestSubmitted',false);
 		};
@@ -240,7 +217,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		};
 
 		savecontent variable='local.str' {
-			include "/MuraLocations/inc/findLocationsForm.cfm";
+			include 'includes/findLocationsForm.cfm';
 		}; 
 		return local.str;
 	}
@@ -335,8 +312,6 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		if ( StructKeyExists(arguments, '$') ) {
 			set$(arguments.$);
 		};
-
-		//addScripts();
 		
 		// used to populate the 'from' point on the form
 		if ( !len(trim(arguments.start)) ) {
@@ -399,16 +374,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			,mapZoom = arguments.mapZoom
 		);
 
-		// scripts
-		savecontent variable='local.str' {
-			writeOutput('<script>');
-			include '/MuraLocations/assets/js/mura-locations.js';
-			writeOutput('</script>');
-		};
-
-		local.str = local.gMap.getMap() & local.str;
-
-		return local.str;
+		return local.gMap.getMap();
     }
     
     /**

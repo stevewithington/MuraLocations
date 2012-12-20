@@ -9,13 +9,9 @@
 * http://www.apache.org/licenses/LICENSE-2.0
 *
 */
-
-	/**
-	* init()
-	*/
 	public any function init() output=false { 
 		return this; 
-	};
+	}
 </cfscript>
 	
 	<cffunction name="htmlHead" output="false" returntype="void">

@@ -15,7 +15,7 @@ component accessors=true output=false {
 	*/
 	public Geo function init() output=false {
 		return this;
-	};
+	}
 
 	/**
 	* getResponse()

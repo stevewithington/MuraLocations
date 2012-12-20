@@ -78,7 +78,7 @@ component accessors=true output=false {
 		setMicroDataFormat(arguments.microDataFormat);
 		setInfoWindow(arguments.infoWindow);
 		return this;
-	};
+	}
 	
 	/**
 	* setInfoWindow()
@@ -92,7 +92,7 @@ component accessors=true output=false {
 		} else {
 			variables.infoWindow = getMicrodata();
 		};
-	};
+	}
 	
 	/**
 	* gMapPoint()
@@ -100,7 +100,7 @@ component accessors=true output=false {
 	*/
 	public any function gMapPoint() output=false {
 		return [getPlaceName(),getLatitude(),getLongitude(),getZIndex(),getIcon(),getInfoWindow()];
-	};
+	}
 	
 	/**
 	* getMicrodata()
@@ -122,55 +122,32 @@ component accessors=true output=false {
 			default :
 				local.e = 'div';
 		};
-		
+
 		savecontent variable='local.str' {
-			WriteOutput('<#local.e# itemprop="location" itemscope itemtype="http://schema.org/Place" class="locationPlace">');
-
-				if ( len(trim(getDetailsURL())) ){
-					WriteOutput('<a class="locationDetailsURL" href="#getDetailsURL()#" itemprop="url" rel="external">');	
-				};
-
-				WriteOutput('<h3 class="locationName"><span itemprop="name">#HTMLEditFormat(getPlaceName())#</span></h3>');
-				if ( len(trim(getLocationDistance())) ) {
-					WriteOutput('<p class="ui-li-aside"><strong>#getLocationDistance()#</strong> miles</p>');
-				};
-				WriteOutput('<div class="locationAddressWrapper" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">');
-					if ( len(trim(getStreetAddress())) ) {
-						WriteOutput('<div class="locationStreetAddress" itemprop="streetAddress">#HTMLEditFormat(getStreetAddress())#</div>');
-					};
-					if ( len(trim(getAddressLocality())) ) {
-						WriteOutput('<span class="locationAddressLocality" itemprop="addressLocality">#HTMLEditFormat(getAddressLocality())#</span>, ');
-					}; 
-					if ( len(trim(getAddressRegion())) ) {
-						WriteOutput('<span class="locationAddressRegion" itemprop="addressRegion">#HTMLEditFormat(getAddressRegion())#</span>');
-					};
-					if ( len(trim(getPostalCode())) ) {
-						WriteOutput(' <span class="locationPostalCode" itemprop="postalCode">#HTMLEditFormat(getPostalCode())#</span>');
-					};
-					if ( len(trim(getLocationNotes())) ) {
-						WriteOutput('<div class="locationNotes">#getLocationNotes()#</div>');
-					};
-				WriteOutput('</div>'); // @end PostalAddress
-				if ( arguments.displayPhone && len(trim(getLocationTelephone())) ) {
-					WriteOutput('<div class="locationTelephone"><span itemprop="telephone">#HTMLEditFormat(getLocationTelephone())#</span> <strong>Phone</strong></div>');
-				};
-				if ( arguments.displayFax && len(trim(getLocationFaxNumber())) ) {
-					WriteOutput('<div class="locationFaxNumber"><span itemprop="faxNumber">#HTMLEditFormat(getLocationFaxNumber())#</span> <strong>Fax</strong></div>');
-				};
-
-				if ( len(trim(getLocationEmail())) && IsValid('email', getLocationEmail()) ) {
-					WriteOutput('<div class="locationEmail"><a itemprop="email" href="mailto:#HTMLEditFormat(getLocationEmail())#">#HTMLEditFormat(getLocationEmail())#</a></div>');
-				};
-			
-				WriteOutput('<div itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates"><meta itemprop="latitude" content="#getLatitude()#" /><meta itemprop="longitude" content="#getLongitude()#" /></div>');
-
-				if ( len(trim(getDetailsURL())) ){
-					WriteOutput('</a>');	
-				};
-			WriteOutput('</#local.e#>');
+			include 'includes/place.cfm';
 		};
+
 		return Trim(local.str);
-	};
+	}
+
+	public any function getPlaceName() output=false { return variables.placeName; }
+	public any function getLatitude() output=false { return variables.latitude; }
+	public any function getLongitude() output=false { return variables.longitude; }
+	public any function getZIndex() output=false { return variables.ZIndex; }
+	public any function getIcon() output=false { return variables.icon; }
+	public any function getStreetAddress() output=false { return variables.streetAddress; }
+	public any function getAddressLocality() output=false { return variables.addressLocality; }
+	public any function getAddressRegion() output=false { return variables.addressRegion; }
+	public any function getPostalCode() output=false { return variables.postalCode; }
+	public any function getLocationNotes() output=false { return variables.locationNotes; }
+	public any function getDetailsURL() output=false { return variables.detailsURL; }
+	public any function getMapURL() output=false { return variables.mapURL; }
+	public any function getLocationTelephone() output=false { return variables.locationTelephone; }
+	public any function getLocationFaxNumber() output=false { return variables.locationFaxNumber; }
+	public any function getLocationEmail() output=false { return variables.locationEmail; }
+	public any function getLocationDistance() output=false { return variables.locationDistance; }
+	public any function getMicroDataFormat() output=false { return variables.microDataFormat; }
+	public any function getInfoWindow() output=false { return variables.infoWindow; }
 
 	/**
 	* getProperties()
@@ -184,6 +161,6 @@ component accessors=true output=false {
 			local.properties[local.data[local.i].name] = Evaluate('get#local.data[local.i].name#()');
 		};
 		return local.properties;
-	};
+	}
 
 }

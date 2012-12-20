@@ -53,7 +53,7 @@ component accessors=true output=false {
 			, start=getStart()
 		);
 		return this;
-	};
+	}
 
 	/**
 	* setMap()
@@ -116,165 +116,12 @@ component accessors=true output=false {
 			local.mapHeight = '100px';
 		};
 
-		savecontent variable="local.gmapHtmlHeadContent" {
-			WriteOutput('
-				<style type="text/css">
-					.gmapWrapper .gmapCanvas {width:#local.mapWidth#;height:#local.mapHeight#;}
-					.gmapWrapper .gmapDirectionsFormWrapper {width:#local.mapWidth#;}
-					.gmapWrapper .gmapDirections {width:#local.mapWidth#;}
-				</style>
-				<!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
-				<script>!window.jQuery && document.write(''<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"><\/script>'');</script>
-				<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
-				<script type="text/javascript">
-				/* <![CDATA[ */
-					window.onload=function(){initGmap();};
-					// each place should be formatted as: ["PlaceName","Lat","Lng","ZIndex","Icon","InfoWindow"]
-					var places = #SerializeJSON(arguments.places)#;
-					var directionDisplay;
-					var directionsService;
-					var map;
-					var marker;
-					var markersArray = new Array();
-					var infoWindow;
-		
-					// INIT
-					function initGmap(){
-						directionsDisplay = new google.maps.DirectionsRenderer();
-						directionsService = new google.maps.DirectionsService();
-		
-						// let the map auto-zoom to fit all places in the viewport
-						var bounds = new google.maps.LatLngBounds();
-						for (var i=0; i<places.length; i++) {
-							var place = places[i];
-							var point = new google.maps.LatLng(place[1],place[2]);
-							bounds.extend(point);};
-		
-						// gather up map options for the constructor				
-						var mapOptions = {
-							center: bounds.getCenter()');
-							if ( arguments.mapZoom != 'default' ) {
-								WriteOutput(', zoom: #arguments.mapZoom#');
-							};
-							WriteOutput(', mapTypeId: google.maps.MapTypeId.#arguments.mapType#
-						};
-		
-						// GMap v3 Constructor
-						map = new google.maps.Map(document.getElementById("#local.mapCanvasID#"), mapOptions);');
-						if ( arguments.mapZoom == 'default' ) {
-							WriteOutput('map.fitBounds(bounds);');
-						};
-		
-						WriteOutput('// Directions
-						directionsDisplay.setMap(map);
-						directionsDisplay.setPanel(document.getElementById("#local.mapDirectionsID#"));
-		
-						// Markers/Icons and Info Windows
-						setMarkers(map, places);
-					};
-		
-					// Markers/Icons
-					function setMarkers(map, places) {
-						for (var i=0;i<places.length;i++) {
-							var place = places[i];
-							// get the 2nd and 3rd positions of the place array (latitude, longitude)
-							var iLatLng = new google.maps.LatLng(place[1], place[2]);
-							var zIndex = Math.round(parseFloat(place[3]));
-							var marker = new google.maps.Marker({
-								position: iLatLng
-								, map: map
-								, title: place[0]
-								, zIndex: zIndex
-								, icon: place[4]
-							});
-							// add an InfoWindow to the marker
-							addInfoWindow(marker, place[5]);
-						};
-					};
-		
-					// Info Window
-					function addInfoWindow(marker, content) {
-						var infowindow = new google.maps.InfoWindow({
-							content: ''<div class="infoWindowWrapper">'' + content + ''</div>''
-							// constrain the width of the infoWindow, otherwise it can expand to the full width of the page
-							, maxWidth: #val(arguments.mapInfoWindowMaxWidth)#
-						});
-						google.maps.event.addListener(marker, "click", function() {
-							infowindow.open(map,marker);
-						});
-					};
-		
-					// Directions
-					function calcRoute(start, end, mode) {
-						if ( mode === undefined ) {
-							mode = "DRIVING";
-						};
-						var request = {
-							origin:start
-							, destination:end
-							, travelMode:google.maps.DirectionsTravelMode[mode]
-						};
-						directionsService.route(
-							request
-							, function(response, status) {
-								if (status == google.maps.DirectionsStatus.OK) {
-									directionsDisplay.setDirections(response);
-								};
-							}
-						);
-					};
-				/* ]]> */
-				</script>
-			');
-		};
-
-		savecontent variable="local.str" {
-			local.lib = new Lib();
-			lib.htmlhead(local.gmapHtmlHeadContent);
-			WriteOutput('<div class="gmapWrapper"><div class="gmapCanvas" id="#local.mapCanvasID#"></div>');
-			// Directions Form
-			if ( arguments.displayDirections ) {
-				WriteOutput('<div class="gmapDirectionsFormWrapper">
-					<form data-ajax="false" class="gmapDirectionsForm" name="frmDirections" id="#local.formID#" action="javascript:void();" method="post" onSubmit="calcRoute(this.start.value,this.end.value,this.mode.value); return false;">
-						<div class="gmapStart gmapField">
-							<label for="start">From:</label>
-							<input type="text" size="40" id="start" name="start" value="#arguments.start#" />
-						</div>
-						<div class="gmapEnd gmapField">
-							<label for="end">To:</label>');
-							if ( ArrayLen(arguments.places) > 1 ) {
-								WriteOutput('<select name="end" id="end">');
-								for ( local.i=1; local.i <= ArrayLen(arguments.places); local.i++ ) {
-									WriteOutput('<option value="#arguments.places[local.i][2]#,#arguments.places[local.i][3]#">#arguments.places[local.i][1]#</option>');
-								};
-								WriteOutput('</select>');
-							} else {
-								for ( local.i=1; local.i <= ArrayLen(arguments.places); local.i++ ) {
-									WriteOutput(' #arguments.places[local.i][1]# <input type="hidden" name="end" value="#arguments.places[local.i][2]#,#arguments.places[local.i][3]#" />');
-								};
-							};
-						WriteOutput('</div>');
-						// Travel Modes
-						if ( arguments.displayTravelMode ) {
-							WriteOutput('<div class="gmapTravelMode gmapField"><label for="mode">Travel Mode:</label>
-								<select name="mode" id="mode">
-									<option value="DRIVING">Driving</option>
-									<option value="BICYCLING">Bicycling</option>
-									<option value="WALKING">Walking</option>
-								</select></div>');
-						} else {
-							WriteOutput('<input type="hidden" name="mode" id="mode" value="DRIVING" />');
-						};
-						WriteOutput('<div class="gmapSubmit gmapField">
-							<input type="submit" name="submit" value="Get Directions &raquo;" />
-						</div>
-					</form>
-				</div>
-				<div class="gmapDirections" id="#local.mapDirectionsID#"></div></div>');
-			}; // @end if displayDirections
+		savecontent variable='local.str' {
+			include 'includes/gmap.cfm';
+			include 'includes/gmapScript.cfm';
 		};
 		variables.map = local.str;
-	};
+	}
 
 	/**
 	* getProperties()
@@ -288,6 +135,6 @@ component accessors=true output=false {
 			local.properties[local.data[local.i].name] = Evaluate('get#local.data[local.i].name#()');
 		};
 		return local.properties;
-	};
+	}
 
 }

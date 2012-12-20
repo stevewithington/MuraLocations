@@ -10,17 +10,14 @@
 component extends="mura.plugin.plugincfc" accessors=true output=false {
 	
 	public void function install() output=false {
-		var local = {};
 		application.appInitialized = false;
 	}
 
 	public void function update() output=false {
-		var local = {};
 		application.appInitialized = false;
 	};
 	
 	public void function delete() output=false {
-		var local = {};
 		application.appInitialized = false;
 	}
 
