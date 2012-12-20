@@ -78,6 +78,18 @@ string mapZoom='default'</pre>
 			<h5>Example Using Arguments</h5>
 			<pre>##$.muraLocations.dspLocationsMap(displayTravelMode=false, mapType='ROADMAP')##</pre>
 
+			<h3>Recommended Usage</h3>
+			<p>Probably the best way to use this plugin would be to setup your 'Locations' area like this:</p>
+
+<pre>Locations (Just a normal page or portal)
+	- Find Locations (A page with the 'Find Location Form' added to the main content area)
+	- View All Locations (Portal / MuraLocation)
+		- Location 1 (Page / MuraLocation)
+		- Location 2 (Page / MuraLocation)
+		- etc.
+</pre>
+			<p>Technically, you could have 'Page / MuraLocation' content nodes scattered throughout your site and simply use the 'Find Location Form' display object on a 'Find Closest Location' page.</p>
+
 			<h3>Tested With</h3>
 			<ul>
 				<li>Mura CMS Core Version 6.0.5171</li>
