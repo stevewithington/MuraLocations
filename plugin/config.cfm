@@ -9,15 +9,12 @@
 *
 */
 if ( !IsDefined('$') ) {
-
 	$ = application.serviceFactory.getBean('$');
-
 	if ( StructKeyExists(session, 'siteid') ) {
 		$.init(session.siteid);
 	} else {
 		$.init('default');
 	};
-
 };
 
 if ( !IsDefined('pluginConfig') ) {
@@ -25,6 +22,6 @@ if ( !IsDefined('pluginConfig') ) {
 };
 
 if ( !$.currentUser().isSuperUser() ) {
-	location( url='#$.globalConfig('context')#/admin/', addtoken=false );
+	location($.globalConfig('context') & '/admin/', false);
 };
 </cfscript></cfsilent>
