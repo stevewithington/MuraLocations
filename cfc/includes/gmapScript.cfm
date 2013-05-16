@@ -11,9 +11,9 @@
 </cfscript></cfsilent>
 <cfoutput>
 	<style type="text/css">
-		.gmapWrapper .gmapCanvas {width:#local.mapWidth#;height:#local.mapHeight#;}
-		.gmapWrapper .gmapDirectionsFormWrapper {width:#local.mapWidth#;}
-		.gmapWrapper .gmapDirections {width:#local.mapWidth#;}
+		.gmapWrapper .gmapCanvas {width:#local.mapWidth#;height:#local.mapHeight# !important;}
+		.gmapWrapper .gmapDirectionsFormWrapper {width:#local.mapWidth# !important;}
+		.gmapWrapper .gmapDirections {width:#local.mapWidth# !important;}
 		/* there's an issue with Bootstrap interferring with GMap's infoWindow https://github.com/twitter/bootstrap/issues/2410 */
 		img[src*="gstatic.com/"], img[src*="googleapis.com/"] {max-width: 99999px;}
 	</style>
@@ -24,11 +24,9 @@
 		var locations = #SerializeJSON(arguments.places)#;
 		var infoWindow = new google.maps.InfoWindow();
 		var bounds = new google.maps.LatLngBounds();
-		for (i=0; i<locations.length; i++) {
-			bounds.extend(new google.maps.LatLng(locations[i][1], locations[i][2]));
-		}
+		var L = locations.length;
+		for (i=0; i<L; i++) { bounds.extend(new google.maps.LatLng(locations[i][1], locations[i][2])); }
 
-		// MAP
 		var map = new google.maps.Map(document.getElementById('#local.mapCanvasID#'), {
 			center: bounds.getCenter()
 			, mapTypeId: google.maps.MapTypeId.#UCase(arguments.mapType)#
@@ -38,7 +36,7 @@
 
 		// MARKERS
 		var marker, i;
-		for (i=0; i<locations.length; i++) {
+		for (i=0; i<L; i++) {
 			// marker
 			marker = new google.maps.Marker({
 				position: new google.maps.LatLng(locations[i][1], locations[i][2])
@@ -61,7 +59,7 @@
 		}
 
 		// DIRECTIONS
-		var	directionsService = new google.maps.DirectionsService();
+		var directionsService = new google.maps.DirectionsService();
 		var directionsDisplay = new google.maps.DirectionsRenderer();
 		directionsDisplay.setMap(map);
 		directionsDisplay.setPanel(document.getElementById('#local.mapDirectionsID#'));
