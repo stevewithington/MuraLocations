@@ -2,7 +2,7 @@
 * 
 * This file is part of MuraLocations TM
 *
-* Copyright 2010-2012 Stephen J. Withington, Jr.
+* Copyright 2010-2013 Stephen J. Withington, Jr.
 * Licensed under the Apache License, Version v2.0
 * http://www.apache.org/licenses/LICENSE-2.0
 *
@@ -36,7 +36,7 @@ component accessors=true output=false {
 			local.result = local.httpService.send().getPrefix();
 		} catch (any e) { // either Google Maps is down OR no internet connection
 			return 'Service is currently unavailable. You may also want to check your internet connection.';
-		};
+		}
 	
 		if ( local.result.statuscode == '200 OK' && StructKeyExists(local.result, 'filecontent') ) {
 			if (  IsJSON(local.result.filecontent) ) {
@@ -44,18 +44,14 @@ component accessors=true output=false {
 				local.response = DeSerializeJSON(local.json);
 			} else {
 				local.response = local.result.filecontent; // not JSON
-			};
+			}
 		} else if ( StructKeyExists(local.result, 'filecontent') && IsJSON(local.result.filecontent) ) {
 			local.response = DeSerializeJSON(local.result.filecontent); // bad status code
 		} else {
 			local.response = local.result; // error
-		};
+		}
 		
-		if ( arguments.debug ) {
-			return local.result;
-		} else {
-			return local.response;
-		};
+		return arguments.debug ? local.result : local.response;
 	}
 	
 	/**
@@ -77,7 +73,7 @@ component accessors=true output=false {
 		} else {
 			// not good
 			return '';
-		};
+		}
 	}
 	
 	/**
@@ -91,14 +87,14 @@ component accessors=true output=false {
 		local.response = getResponse(arguments);
 		if ( arguments.debug ) {
 			return local.response;
-		};
+		}
 		if ( IsStruct(local.response) && StructKeyExists(local.response, 'results') && ArrayLen(local.response.results) ) {
 			// we're good!
 			return local.response.results[1].formatted_address;
 		} else {
 			// not good
 			return '';
-		};
+		}
 	}
 	
 	/**
@@ -162,11 +158,11 @@ component accessors=true output=false {
 		if ( lat1 > 90 || lat1 < -90 || lon1 > 180 || lon1 < -180 || lat2 > 90 || lat2 < -90 || lon2 > 180 || lon2 < -180 ) {
 			//return 'Latitude must be between 0&deg; and &plusmn; 90&deg;. (South Latitude is negative) Longitude mast be between 0&deg; and &plusmn; 180&deg;. (West Longitude is negative)';
 			return 123456789;
-		};
+		}
 	
 		if ( !StructKeyExists( arguments, 'units' ) || !ListFindNoCase( 'm,km,sm,nm,yd,ft,in,cm,mm', arguments.units ) ) {
 			arguments.units = 'sm'; // default to statute miles
-		};
+		}
 	
 		do {
 			sinLambda = Sin( lambda );

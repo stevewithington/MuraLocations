@@ -2,7 +2,7 @@
 * 
 * This file is part of MuraLocations TM
 *
-* Copyright 2010-2012 Stephen J. Withington, Jr.
+* Copyright 2010-2013 Stephen J. Withington, Jr.
 * Licensed under the Apache License, Version v2.0
 * http://www.apache.org/licenses/LICENSE-2.0
 *
@@ -81,15 +81,15 @@ component accessors=true output=false {
 		// validation
 		if ( !ListFindNoCase('default^0^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18', arguments.mapZoom, '^') ) {
 			arguments.mapZoom = 'default';
-		};
+		}
 
 		if ( !IsBoolean(arguments.displayDirections) ) {
 			arguments.displayDirections = true;
-		};
+		}
 
 		if ( !IsBoolean(arguments.displayTravelMode) ) {
 			arguments.displayTravelMode = true;
-		};
+		}
 
 		// validate mapType
 		local.validMapTypes = 'ROADMAP,SATELLITE,HYBRID,TERRAIN';
@@ -97,7 +97,7 @@ component accessors=true output=false {
 			arguments.mapType = 'TERRAIN';
 		} else {
 			arguments.mapType = UCase(arguments.mapType);
-		};
+		}
 
 		// minimum map width and height attributes
 		if ( arguments.mapWidth == 0 ) {
@@ -106,7 +106,7 @@ component accessors=true output=false {
 			local.mapWidth = arguments.mapWidth & 'px';
 		} else {
 			local.mapWidth = '150px';
-		};
+		}
 
 		if ( arguments.mapHeight == 0 ) {
 			local.mapHeight = '100%';
@@ -114,7 +114,7 @@ component accessors=true output=false {
 			local.mapHeight = arguments.mapHeight & 'px';
 		} else {
 			local.mapHeight = '100px';
-		};
+		}
 
 		savecontent variable='local.str' {
 			include 'includes/gmap.cfm';

@@ -2,7 +2,7 @@
 * 
 * This file is part of MuraLocations TM
 *
-* Copyright 2010-2012 Stephen J. Withington, Jr.
+* Copyright 2010-2013 Stephen J. Withington, Jr.
 * Licensed under the Apache License, Version v2.0
 * http://www.apache.org/licenses/LICENSE-2.0
 *
@@ -27,10 +27,9 @@ if ($.mobile != null) {
 		//console.log("jqm is NOT running.");
 		runScripts(jQuery.event, jQuery.ui);
 	});
-};
+}
 
 function runScripts(event,ui){
-
 	// this helps prevent a number of issues when navigating to dynamic pages
 	// the key is to have this script loaded when a user initially visits the site
 	$('#navPrimary a,#navSub a').attr({'data-ajax': false});
@@ -42,17 +41,17 @@ function runScripts(event,ui){
 	// don't forget to trigger('updatelayout') when doing things like hide(), etc.
 	initialize();
 	function initialize(){
-
 		if ($.mobile != null){
 			$.mobile.ajaxFormsEnabled = false;
-		};
+		}
+
 		if (navigator.geolocation != null) {
 			showGeoForm();
 		} else { // geolocation NOT supported
 			updateStatus(defaultMessage);
 			showManualForm();
-		};
-	};
+		}
+	}
 
 	$('#btnDoGeo').on('click', function(event){
 		event.preventDefault();
@@ -63,7 +62,7 @@ function runScripts(event,ui){
 		};
 		doGeolocation();
 	});
-	;
+
 	$('#btnDoForm').on('click', function(event){
 		event.preventDefault();
 		hideGeoForm();
@@ -73,22 +72,22 @@ function runScripts(event,ui){
 	
 	function showGeoForm(){
 		$('#geoOptions').show();
-	};
+	}
 	function hideGeoForm(){
 		$('#geoOptions').hide();
-	};
+	}
 	function showManualForm(){
 		$('#initialFormWrapper').show();
 		$('#geoOptions').hide();
-	};
+	}
 	function updateStatus(message){
 		$('#status').html(message);
-	};
+	}
 	function doGeolocation(){
 		navigator.geolocation.getCurrentPosition(handleGeoSuccess, handleGeoError, {
 			timeout: 10000
 		});
-	};
+	}
 	
 	// SUCCESS
 	function handleGeoSuccess(position){
@@ -99,7 +98,7 @@ function runScripts(event,ui){
 		//console.log(location);
 		if ($.mobile != null) {
 			$.mobile.hidePageLoadingMsg();
-		};
+		}
 		//showGeoForm();
 		if (accuracy >= 1000) { // if accuracy is too large, don't try to calculate
 			updateStatus('<p>The results obtained are not accurate enough for meaningful calculations. Try refreshing your page or manually enter your current location.</p>' + defaultMessage);
@@ -111,15 +110,15 @@ function runScripts(event,ui){
 			$('#currentLocation').val(location);
 			$('#usingGeolocation').val(true);
 			$('#initialForm').submit();
-		};
-	};
+		}
+	}
 	
 	// ERROR
 	function handleGeoError(error){
 		var msg = '';
 		if ($.mobile != null) {
 			$.mobile.hidePageLoadingMsg();
-		};
+		}
 		console.log('Geolocation ERROR (' + error.code + '):' + error.message);
 		switch (error.code) {
 			case 0: // unknown error
@@ -136,9 +135,9 @@ function runScripts(event,ui){
 				break;
 			default: // not documented
 				msg = '<p class="error">An unknown error has occurred:<br />' + error.message + '</p>';
-		};
+		}
 		updateStatus(msg + defaultMessage);
 		showManualForm();
-	};
+	}
 	
-};
+}

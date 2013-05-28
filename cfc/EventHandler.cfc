@@ -2,7 +2,7 @@
 * 
 * This file is part of MuraLocations TM
 *
-* Copyright 2010-2012 Stephen J. Withington, Jr.
+* Copyright 2010-2013 Stephen J. Withington, Jr.
 * Licensed under the Apache License, Version v2.0
 * http://www.apache.org/licenses/LICENSE-2.0
 *
@@ -164,9 +164,9 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	}
 
 	/**
-	* onPortalMuraLocationBodyRender()
+	* onFolderMuraLocationBodyRender()
 	*/
-	public any function onPortalMuraLocationBodyRender(required struct $) output=false {
+	public any function onFolderMuraLocationBodyRender(required struct $) output=false {
 		var local = {};
 		set$(arguments.$);
 		local.body = get$().setDynamicContent(get$().content('body'));
@@ -179,6 +179,11 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, mapHeight = get$().content('mapHeight')
 			, mapZoom = get$().content('mapZoom')
 		);
+	}
+
+	// Mura 5.x compatibility
+	public any function onPortalMuraLocationBodyRender(required struct $) output=false {
+		return onFolderMuraLocationBodyRender(arguments.$);
 	}
 	
 	/**
@@ -208,17 +213,17 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		// this is necessary so that if being used as a display object
 		if ( StructKeyExists(arguments, '$') ) {
 			set$(arguments.$);
-		};
+		}
 		if (!IsBoolean(get$().event('findLocationRequestSubmitted'))){
 			get$().event('findLocationRequestSubmitted',false);
-		};
+		}
 		if (get$().event('findLocationRequestSubmitted')){
-			get$().announceEvent('onFindLocations',get$());
-		};
+			get$().announceEvent('onFindLocations', get$());
+		}
 
 		savecontent variable='local.str' {
 			include 'includes/findLocationsForm.cfm';
-		}; 
+		} 
 		return local.str;
 	}
 	
@@ -319,21 +324,21 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				arguments.start = get$().event('start');
 			} else if ( len(trim(get$().event('currentLocation'))) ) {
 				arguments.start = get$().event('currentLocation');
-			};
-		};
+			}
+		}
 
 		local.places = ArrayNew(1);
 		local.fBean = getMuraLocationsBean($=get$());
 		// get the feed's iterator
 		local.it = local.fBean.getIterator();
 		// if no locations, return empty string
-		if ( !local.it.hasNext() ) { return ''; };
+		if ( !local.it.hasNext() ) { return ''; }
 		
 		// loop over each Page/MuraLocation and add it to the places array
 		while ( local.it.hasNext() ) {
 			local.item = local.it.next();
 
-			if ( get$().content('type') == 'Portal' || YesNoFormat(local.item.getValue('displayOnAllLocationsMap')) ) {
+			if ( ListFindNoCase('Portal,Folder', get$().content('type')) || YesNoFormat(local.item.getValue('displayOnAllLocationsMap')) ) {
 				local.lat = local.item.getValue('latitude');
 				local.lng = local.item.getValue('longitude');
 				// if viewing via mobile device that may have mapping capabilities, try to provide a device-native link to view the map
@@ -341,7 +346,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				local.detailsURL = local.item.getValue('url');
 				if ( len(trim(arguments.start)) ) {
 					local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(arguments.start);
-				};
+				}
 
 				local.place = new Place(
 					placeName = local.item.getValue('title')
@@ -359,7 +364,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 					,mapURL = local.mapURL
 				);
 				ArrayAppend(local.places, local.place.gMapPoint());
-			};
+			}
 		};
 		
 		// create a new Google Map with the array of places
@@ -384,7 +389,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		var local = {};
 		if ( StructKeyExists(arguments, '$') ) {
 			set$(arguments.$);
-		};
+		}
 		
 		// create a dynamic feed of all Page/MuraLocation subtypes
 		local.fBean = get$().getBean('feed');
@@ -394,15 +399,15 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		local.fBean.setMaxItems(0); // 0 = unlimited
 		local.fBean.setShowNavOnly(true); // set to false to include content even if it's not in the navigation
 		
-		// If we're on a Portal: Mura/Location, then check to see if we only want to display children of this portal...otherwise, we'll include all locations.
-		if ( listfindnocase("Portal,Folder",get$().content('type')) && get$().content('subtype') == 'MuraLocation' && YesNoFormat(get$().content('showChildrenOnly')) ) {
+		// If we're on a Folder (formerly Portal): Mura/Location, then check to see if we only want to display children of this portal...otherwise, we'll include all locations.
+		if ( listfindnocase('Portal,Folder', get$().content('type')) && get$().content('subtype') == 'MuraLocation' && YesNoFormat(get$().content('showChildrenOnly')) ) {
 			local.fBean.addAdvancedParam(
 				relationship='AND'
 				, field='tcontent.parentid'
 				, condition='eq'
 				, criteria=get$().content('contentid')
 			);
-		};
+		}
 
 		local.fBean.addParam(
 			relationship='AND'
@@ -505,7 +510,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
     		return local.baseURL & local.coords;
     	} else {
 	    	return '';
-	    };
+	    }
     }
 
 }
