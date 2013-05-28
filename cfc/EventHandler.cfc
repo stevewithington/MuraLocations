@@ -393,9 +393,9 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		local.fBean.setSortDirection('asc');
 		local.fBean.setMaxItems(0); // 0 = unlimited
 		local.fBean.setShowNavOnly(true); // set to false to include content even if it's not in the navigation
-
+		
 		// If we're on a Portal: Mura/Location, then check to see if we only want to display children of this portal...otherwise, we'll include all locations.
-		if ( get$().content('type') == 'Portal' && get$().content('subtype') == 'MuraLocation' && YesNoFormat(get$().content('showChildrenOnly')) ) {
+		if ( listfindnocase("Portal,Folder",get$().content('type')) && get$().content('subtype') == 'MuraLocation' && YesNoFormat(get$().content('showChildrenOnly')) ) {
 			local.fBean.addAdvancedParam(
 				relationship='AND'
 				, field='tcontent.parentid'
