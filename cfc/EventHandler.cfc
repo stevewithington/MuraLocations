@@ -397,6 +397,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		local.fBean.setSortBy('title');
 		local.fBean.setSortDirection('asc');
 		local.fBean.setMaxItems(0); // 0 = unlimited
+		local.fBean.setNextN(10000); // max locations to display
 		local.fBean.setShowNavOnly(true); // set to false to include content even if it's not in the navigation
 		
 		// If we're on a Folder (formerly Portal): Mura/Location, then check to see if we only want to display children of this portal...otherwise, we'll include all locations.
