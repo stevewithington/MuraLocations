@@ -81,6 +81,7 @@ A method has been included with this plugin to quickly and easily display a simp
 ####CFML Method
 ```coldfusion
 #$.muraLocations.dspSimpleMap(name='Location Name', latitude=38.58439200000001, longitude=-121.284517)#
+```
 
 ##Recommended Setup
 
