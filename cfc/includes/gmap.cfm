@@ -11,14 +11,14 @@
 </cfscript></cfsilent>
 <cfoutput>
 	<!-- START: gmapWrapper -->
-	<div class="gmapWrapper">
+	<div id="gmapWrapper_#local.thisID#" class="gmapWrapper">
 
 		<div class="gmapCanvas" id="#local.mapCanvasID#"></div>
 
 		<!--- Directions Form --->
 		<cfif arguments.displayDirections>
 			<div class="gmapDirectionsFormWrapper">
-				<form data-ajax="false" class="gmapDirectionsForm" name="frmDirections" id="#local.formID#" action="javascript:void();" method="post" onSubmit="calcRoute(this.start.value,this.end.value,this.mode.value); return false;">
+				<form data-ajax="false" class="gmapDirectionsForm" name="frmDirections" id="#local.formID#" action="javascript:void();" method="post" onSubmit="calcRoute_#local.thisid#(this.start.value,this.end.value,this.mode.value); return false;">
 					<div class="gmapStart gmapField">
 						<label for="start">From:</label>
 						<input type="text" size="40" id="start" name="start" value="#arguments.start#" />
