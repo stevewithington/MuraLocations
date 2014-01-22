@@ -3,7 +3,7 @@
 * 
 * This file is part of MuraLocations TM
 *
-* Copyright 2010-2013 Stephen J. Withington, Jr.
+* Copyright 2010-2014 Stephen J. Withington, Jr.
 * Licensed under the Apache License, Version v2.0
 * http://www.apache.org/licenses/LICENSE-2.0
 *
@@ -15,7 +15,7 @@
 <cfoutput>
 	<extensions>
 		<!-- PAGE: Mura / Location -->
-		<extension type="Page" subType="MuraLocation">
+		<extension type="Page" subType="MuraLocation" iconClass="icon-pushpin">
 			<attributeset name="MuraLocation Options">
 
 				<attribute 
@@ -243,9 +243,9 @@
 			</attributeset>
 		</extension>
 
-		<!-- FOLDER: Mura / Location -->
-		<extension type="Folder" subType="MuraLocation">
-			<attributeset name="MuraLocation Options">
+		<!-- FOLDER: Mura / LocationsMap -->
+		<extension type="Folder" subType="MuraLocationsMap" availableSubTypes="Page/MuraLocation" iconClass="icon-globe">
+			<attributeset name="MuraLocationsMap Options">
 
 				<attribute
 					name="mapWidth"

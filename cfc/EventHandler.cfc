@@ -2,7 +2,7 @@
 * 
 * This file is part of MuraLocations TM
 *
-* Copyright 2010-2013 Stephen J. Withington, Jr.
+* Copyright 2010-2014 Stephen J. Withington, Jr.
 * Licensed under the Apache License, Version v2.0
 * http://www.apache.org/licenses/LICENSE-2.0
 *
@@ -139,9 +139,9 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			} else { // NO MATCHES!
 				// Maybe user is not connected to the internet?
 				local.errorMessage = 'Sorry...we were unable to connect to Google to geoencode the address you entered on the Extended Attributes Tab. Please check your internet connection and try again.';
-			};
+			}
 
-		};
+		}
 		
 		// Errors
 		if ( StructKeyExists(local, 'errorMessage') ) {
@@ -159,14 +159,14 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			if ( StructKeyExists(local, 'geoResponse') ) {
 				local.bean.setLatitude( local.geoResponse.results[1].geometry.location.lat );
 				local.bean.setLongitude( local.geoResponse.results[1].geometry.location.lng );
-			};
-		};
+			}
+		}
 	}
 
 	/**
-	* onFolderMuraLocationBodyRender()
+	* onFolderMuraLocationsMapBodyRender()
 	*/
-	public any function onFolderMuraLocationBodyRender(required struct $) output=false {
+	public any function onFolderMuraLocationsMapBodyRender(required struct $) output=false {
 		var local = {};
 		set$(arguments.$);
 		local.body = get$().setDynamicContent(get$().content('body'));
@@ -181,9 +181,14 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		);
 	}
 
+	// Backwards compatibility
+	public any function onFolderMuraLocationBodyRender(required struct $) output=false {
+		return onFolderMuraLocationsMapBodyRender(arguments.$);
+	}
+
 	// Mura 5.x compatibility
 	public any function onPortalMuraLocationBodyRender(required struct $) output=false {
-		return onFolderMuraLocationBodyRender(arguments.$);
+		return onFolderMuraLocationsMapBodyRender(arguments.$);
 	}
 	
 	/**
@@ -380,9 +385,60 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		);
 
 		return local.gMap.getMap();
-    }
+	}
+
+	/**
+	* dspMap()
+	* A simple method for devs to display a simple GMap.
+	* Should pass in a location 'name', as well as the 'latitude' + 'longitude' of the place
+	*/
+	public any function dspSimpleMap(
+		string name='Blue River Interactive Group, Inc.'
+		, numeric latitude=38.58439200000001
+		, numeric longitude=-121.284517
+		, boolean displayDirections=true
+		, boolean displayTravelMode=true
+		, string start=''
+		, numeric mapHeight=400
+		, string mapType='TERRAIN'
+		, numeric mapWidth=0
+		, string mapZoom='default'
+	) output=false {
+		var local = {};
+		local.places = [];
+
+		local.mapURL = getMapURL(latitude=arguments.latitude, longitude=arguments.longitude);
+		local.detailsURL = $.content('url');
+		if ( len(trim(arguments.start)) ) {
+			local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(arguments.start);
+		}
+
+		local.place = new Place(
+			placeName = arguments.name
+			,latitude = arguments.latitude
+			,longitude = arguments.longitude
+			,zIndex = 1
+			,detailsURL = local.detailsURL
+			,mapURL = local.mapURL
+		);
+
+		ArrayAppend(local.places, local.place.gMapPoint());
+
+		local.gMap = new GoogleMap(
+			places=local.places
+			,mapType = arguments.mapType
+			,displayDirections = arguments.displayDirections
+			,displayTravelMode = arguments.displayTravelMode
+			,start = arguments.start
+			,mapWidth = arguments.mapWidth
+			,mapHeight = arguments.mapHeight
+			,mapZoom = arguments.mapZoom
+		);
+
+		return local.gMap.getMap();
+	}
     
-    /**
+	/**
 	* getMuraLocationsBean()
 	*/
 	public any function getMuraLocationsBean() output=false {
@@ -476,15 +532,15 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		return local.rs;
 	}
 
-    /**
-    * addScripts()
-    */
-    private void function addScripts() output=false {
+	/**
+	* addScripts()
+	*/
+	private void function addScripts() output=false {
 		get$().loadJSLib();
 		variables.pluginConfig.addToHTMLFootQueue('scripts/inc.cfm');
 	}
     
-    /**
+	/**
 	* getMapURL()
 	*/
 	public string function getMapURL(

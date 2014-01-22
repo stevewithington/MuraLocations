@@ -5,18 +5,18 @@ This is a [Mura CMS](http://getmura.com) Plugin that allows content managers to 
 
 This plugin creates two new content types in Mura:
 
-* ###Folder / MuraLocation
+* ###Folder / MuraLocationsMap
 This content type will display a Google Map to display any 'Page / MuraLocation' types that have been created on the site. There are a number of configurable options available on the 'Extended Attributes' tab such as Map Width, Map Height, Default Zoom, Map Type, Display Directions, Display Travel Mode Options, etc. Please refer to the help icons on the form for more information regarding these fields.
 
 * ###Page / MuraLocation
-This content type will display a Google Map of the location. The location information can be entered/updated by editing the 'Extended Attributes' tab. In addition to most of the same attributes available for 'Folder / MuraLocation' you can enter information such as Street Address, City/Locality, State/Region, Postal Code, Phone, Fax, Email, Latitude and Longitude. Please refer to the help icons on the form for more information regarding these fields.
+This content type will display a Google Map of the location. The location information can be entered/updated by editing the 'Extended Attributes' tab. In addition to most of the same attributes available for 'Folder / MuraLocationsMap' you can enter information such as Street Address, City/Locality, State/Region, Postal Code, Phone, Fax, Email, Latitude and Longitude. Please refer to the help icons on the form for more information regarding these fields.
 
 ###Plugin Display Objects
 
 There are two display objects available:
 
 * ####Locations Map
-This is quite similar to the 'Folder / MuraLocation' with the exception that it will display a map of all content typed as 'Page / MuraLocation' as long as the 'Show on All Locations Map Display Object' setting is set to yes.
+This is quite similar to the 'Folder / MuraLocationsMap' with the exception that it will display a map of all content typed as 'Page / MuraLocation' as long as the 'Show on All Locations Map Display Object' setting is set to yes.
 
 * ####Find Locations Form
 This allows end-users the ability to find locations nearest them. Depending on the user's browser, they may be able to simply click Use Current Location.
@@ -70,13 +70,25 @@ string mapZoom='default'
 #$.muraLocations.dspLocationsMap(displayTravelMode=false, mapType='ROADMAP')#
 ```
 
+###Simple Map Example Code
+A method has been included with this plugin to quickly and easily display a simple Google Map based on just a location name, it's latitude, and longitude. This method is not tied to any content types in Mura. Whereas the ```dspLocationsMap()``` method only displays locations that have been added to Mura as ```Page/MuraLocation```.
+
+####Mura Tag Method
+```coldfusion
+[mura]$.muraLocations.dspSimpleMap(name='Location Name', latitude=38.58439200000001, longitude=-121.284517)[/mura]
+```
+
+####CFML Method
+```coldfusion
+#$.muraLocations.dspSimpleMap(name='Location Name', latitude=38.58439200000001, longitude=-121.284517)#
+
 ##Recommended Setup
 
 Probably the best way to use this plugin would be to setup your 'Locations' area like this:
 ```coldfusion
 - Locations (Just a normal Page or Folder)
-	- Find Locations (A Page with the 'Find Location Form' added to the main content area)
-	- View All Locations (Folder / MuraLocation)
+	- Find Locations (A Page with the 'Find Location Form' display object added to the main content area)
+	- View All Locations (Folder / MuraLocationsMap)
 		- Location 1 (Page / MuraLocation)
 		- Location 2 (Page / MuraLocation)
 		- etc.
@@ -113,7 +125,7 @@ Cheers!
 [Steve Withington](http://www.stephenwithington.com)
 
 ##License
-Copyright 2013 Stephen J. Withington, Jr.
+Copyright 2010-2014 Stephen J. Withington, Jr.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License. You may obtain a copy of the License in the LICENSE file, or at:
 
