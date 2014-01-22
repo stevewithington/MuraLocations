@@ -24,9 +24,11 @@ component accessors=true output=false {
 	property name='locationTelephone' default='' type='string';
 	property name='locationFaxNumber' default='' type='string';
 	property name='locationEmail' default='' type='string';
+	property name='locationImage' default='' type='string';
 	property name='locationDistance' default='' type='any';
 	property name='microDataFormat' default='li' type='string';
 	property name='infoWindow' default='' type='string';
+	property name='isMobile' default=false type='boolean';
 
 	/**
 	* init()
@@ -38,6 +40,7 @@ component accessors=true output=false {
 	* @postalCode zip
 	* @locationNotes brief notes or information to listed beneath the location address (e.g., Located inside Walmart)
 	* @microdataFormat getMicrodata() will return each Place wrapped in either 'li', 'span' or 'div'...the only valid options at this time
+	* @locationImage URL to an image of the location
 	*/
 	public Place function init(
 		required string placeName
@@ -55,9 +58,11 @@ component accessors=true output=false {
 		, string locationTelephone=''
 		, string locationFaxNumber=''
 		, string locationEmail=''
+		, string locationImage=''
 		, any locationDistance=''
 		, string microDataFormat='div'
 		, string infoWindow=''
+		, boolean isMobile=false
 	) output=false {
 		setPlaceName(arguments.placeName);
 		setLatitude(arguments.latitude);
@@ -74,9 +79,11 @@ component accessors=true output=false {
 		setLocationTelephone(arguments.locationTelephone);
 		setLocationFaxNumber(arguments.locationFaxNumber);
 		setLocationEmail(arguments.locationEmail);
+		setLocationImage(arguments.locationImage);
 		setLocationDistance(arguments.locationDistance);
 		setMicroDataFormat(arguments.microDataFormat);
 		setInfoWindow(arguments.infoWindow);
+		setIsMobile(arguments.isMobile);
 		return this;
 	}
 	
@@ -124,7 +131,11 @@ component accessors=true output=false {
 		};
 
 		savecontent variable='local.str' {
-			include 'includes/place.cfm';
+			if ( getIsMobile() ) {
+				include 'includes/place-mobile.cfm';
+			} else {
+				include 'includes/place.cfm';
+			}
 		};
 
 		return Trim(local.str);
@@ -145,9 +156,11 @@ component accessors=true output=false {
 	public any function getLocationTelephone() output=false { return variables.locationTelephone; }
 	public any function getLocationFaxNumber() output=false { return variables.locationFaxNumber; }
 	public any function getLocationEmail() output=false { return variables.locationEmail; }
+	public any function getLocationImage() output=false { return variables.locationImage; }
 	public any function getLocationDistance() output=false { return variables.locationDistance; }
 	public any function getMicroDataFormat() output=false { return variables.microDataFormat; }
 	public any function getInfoWindow() output=false { return variables.infoWindow; }
+	public any function getIsMobile() output=false { return StructKeyExists(variables, 'isMobile') ?variables.isMobile : false; }
 
 	/**
 	* getProperties()

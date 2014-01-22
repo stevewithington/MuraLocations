@@ -9,17 +9,19 @@
 */
 .muraLocationOuterWrapper, .muraLocationOuterWrapperMobile {clear:both;display:block;}
 .muraLocationOuterWrapper .locationPlace, .muraLocationOuterWrapperMobile .locationPlace {padding:0 0.5em 1em 0;min-width:160px;float:left;}
-.muraLocationOuterWrapper .locationPlace h3 {font-size:1.1em;}
+.muraLocationOuterWrapper .locationPlace h3, 
+.gm-style-iw .infoWindowWrapper .locationPlace h3.locationName
+, .gm-style-iw .infoWindowWrapper .locationPlace h3.locationName span {font-size:18px;}
 .locationPlace a {text-decoration:none;color:#000;}
+.locationPlace .locationImage {}
 .locationInfoWrapper {clear:both;display:block;float:left;width:100%;}
-.locationImageWrapper {}
+.locationImageWrapper {float:left;min-width:100px;}
+.locationContentWrapper {float:left;min-width:100px;}
 .locationImage {}
 .locationInfo {float:left;min-width:160px;padding:0 0.75em 1em 0;}
 .locationInfo h3 {margin:0;font-size:1.1em;}
 .locationInfo p {margin-top:0;}
-
 .muraLocationOuterWrapperMobile .locationInfo {width:100%;clear:both;display:block;padding:0 0 0.5em 0;}
-
 .gmapWrapper {font-family:Arial, Helvetica, sans-serif;font-size:1em;margin:0;padding:0;clear:both;display:block;}
 .gmapWrapper .infoWindowWrapper {font-size:0.8em;}
 .gmapWrapper form, .gmapWrapper input, .gmapWrapper select, .gmapWrapper textarea {font-family:Arial, Helvetica, sans-serif;font-size:1em;}
@@ -39,8 +41,8 @@
 #muraLocationsWrapper ul {padding:0;margin:1em 0;}
 #muraLocationsWrapper #initialFormWrapper, #muraLocationsWrapper #geoOptions {display:none;}
 
-.searchAgainWrapper {padding:2em 0;}
-a.geoButton {font-size:1.5em;font-weight:bold;clear:both;display:block;margin:1em 0;}
+.searchAgainWrapper {padding:2em 0;clear:both;display:block;}
+/*a.geoButton {font-size:1.5em;font-weight:bold;clear:both;margin:1em 0;}*/
 
 /* LOCATION SCHEMA
  * when the location schema is output, if the user is using a mobileFormat, then

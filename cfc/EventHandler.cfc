@@ -48,43 +48,51 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	public any function onPageMuraLocationBodyRender(required struct $) output=false {
 		var local = {};
 		set$(arguments.$);
-		local.$ = arguments.$;
-		local.body = local.$.setDynamicContent($.content('body'));
-		
+		local.isMobile = getIsMobile();
+		local.body = get$().setDynamicContent($.content('body'));
+		local.image = get$().getURLForImage(
+			fileid = get$().content('fileid')
+			, size = 'small'
+			, complete = true
+		);
+
 		// build the map, directions, etc.
 		local.places = [];
 		local.place = new Place(
-			placeName = local.$.content('title')
-			,latitude = local.$.content('latitude')
-			,longitude = local.$.content('longitude')
-			,streetAddress = local.$.content('streetAddress')
-			,addressLocality = local.$.content('addressLocality')
-			,addressRegion = local.$.content('addressRegion')
-			,postalCode = local.$.content('postalCode')
-			,locationNotes = local.$.content('locationNotes')
-			,locationTelephone = local.$.content('locationTelephone')
-			,locationFaxNumber = local.$.content('locationFaxNumber')
-			,locationEmail = local.$.content('locationEmail')
+			placeName = get$().content('title')
+			, latitude = get$().content('latitude')
+			, longitude = get$().content('longitude')
+			, streetAddress = get$().content('streetAddress')
+			, addressLocality = get$().content('addressLocality')
+			, addressRegion = get$().content('addressRegion')
+			, postalCode = get$().content('postalCode')
+			, locationNotes = get$().content('locationNotes')
+			, locationTelephone = get$().content('locationTelephone')
+			, locationFaxNumber = get$().content('locationFaxNumber')
+			, locationEmail = get$().content('locationEmail')
+			, locationImage = local.image
+			, isMobile = local.isMobile
 		);
 		
 		ArrayAppend(local.places, local.place.gMapPoint());
 
 		local.gMap = new GoogleMap(
 			places=local.places
-			, mapType = local.$.content('mapType')
-			, displayDirections = local.$.content('displayDirections')
-			, displayTravelMode = local.$.content('displayTravelMode')
-			, start = local.$.event('start')
-			, mapWidth = local.$.content('mapWidth')
-			, mapHeight = local.$.content('mapHeight')
-			, mapZoom = local.$.content('mapZoom')
+			, mapType = get$().content('mapType')
+			, displayDirections = get$().content('displayDirections')
+			, displayTravelMode = get$().content('displayTravelMode')
+			, start = get$().event('start')
+			, mapWidth = get$().content('mapWidth')
+			, mapHeight = get$().content('mapHeight')
+			, mapZoom = get$().content('mapZoom')
 		);
 		
 		// if you don't need anything fancy, just use this:
-		//return local.body & local.gMap.getMap();
+		// return local.body & local.gMap.getMap();
 
-		local.outerWrapperClass = local.$.event('muraMobileRequest') ? 'muraLocationOuterWrapperMobile' : 'muraLocationOuterWrapper';
+		local.outerWrapperClass = local.isMobile ? 'muraLocationOuterWrapperMobile' : 'muraLocationOuterWrapper';
 
+		local.$ = get$();
 		savecontent variable='local.str' {
 			include 'includes/muraLocationBody.cfm';
 		}; // @END local.str
@@ -238,13 +246,13 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	public any function dspClosestLocations(required struct $) output=false {
 		var local = {};
 		set$($);
-		local.isMobile = get$().event('muraMobileRequest');
-		local.microDataFormat = local.isMobile ? 'li' : 'div';
+		local.microDataFormat = getIsMobile() ? 'li' : 'div';
 		local.result = get$().event('geoResponse').results[1];
 		local.currentAddress = local.result.formatted_address;
 		get$().event('start',local.currentAddress);
 		local.currentLatLng = local.result.geometry.location.lat & ',' & local.result.geometry.location.lng;
-		local.rs = $.muraLocations.getClosestMuraLocations(currentLocation=local.currentLatLng);
+		local.rs = get$().muraLocations.getClosestMuraLocations(currentLocation=local.currentLatLng);
+		local.isMobile = getIsMobile();
 	
 		savecontent variable='local.str' {
 
@@ -267,37 +275,44 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				local.expand = false;
 				if ( local.i eq 1 ) { 
 					local.expand = true;
-				};
+				}
 				local.item = get$().getBean('content').loadBy(contentid=local.rs.contentid[local.i]);
 				local.detailsURL = get$().createHREF(filename=local.item.getValue('filename'));
+				local.image = get$().getURLForImage(
+					fileid = local.item.getValue('fileid')
+					, size = 'small'
+					, complete = true
+				);
 				if ( len(trim(get$().event('start'))) ) {
 					local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(get$().event('start'));
-				};
+				}
 				local.place = new Place(
 					placeName = local.item.getValue('title')
-					,latitude = local.item.getValue('latitude')
-					,longitude = local.item.getValue('longitude')
-					,streetAddress = local.item.getValue('streetAddress')
-					,addressLocality = local.item.getValue('addressLocality')
-					,addressRegion = local.item.getValue('addressRegion')
-					,postalCode = local.item.getValue('postalCode')
-					,locationTelephone = local.item.getValue('locationTelephone')
-					,locationFaxNumber = local.item.getValue('locationFaxNumber')
-					,locationEmail = local.item.getValue('locationEmail')
-					,detailsURL = local.detailsURL
-					,mapURL = getMapURL(local.item.getValue('latitude'),local.item.getValue('longitude'))
-					,locationDistance = local.rs.distance[local.i]
-					,microDataFormat = local.microDataFormat
+					, latitude = local.item.getValue('latitude')
+					, longitude = local.item.getValue('longitude')
+					, streetAddress = local.item.getValue('streetAddress')
+					, addressLocality = local.item.getValue('addressLocality')
+					, addressRegion = local.item.getValue('addressRegion')
+					, postalCode = local.item.getValue('postalCode')
+					, locationTelephone = local.item.getValue('locationTelephone')
+					, locationFaxNumber = local.item.getValue('locationFaxNumber')
+					, locationEmail = local.item.getValue('locationEmail')
+					, locationImage = local.image
+					, detailsURL = local.detailsURL
+					, mapURL = getMapURL(local.item.getValue('latitude'),local.item.getValue('longitude'))
+					, locationDistance = local.rs.distance[local.i]
+					, microDataFormat = local.microDataFormat
+					, isMobile = local.isMobile
 				);
 				WriteOutput(local.place.getMicrodata(expand=local.expand));
 			};
-			if ( local.isMobile ) {
+			if ( getIsMobile() ) {
 				WriteOutput('</ul>');
 				WriteOutput('<a href="#get$().content('url')#" data-role="button" data-icon="search" data-theme="e" rel="external">Search Again</a>');
 
 			} else {
 				WriteOutput('</div>');
-				WriteOutput('<div class="searchAgainWrapper"><a class="geoButton" href="#get$().content('url')#">Search Again</a></div>');
+				WriteOutput('<div class="searchAgainWrapper"><a class="geoButton btn btn-primary" href="#get$().content('url')#">Search Again</a></div>');
 			};
 		};
 		return local.str;
@@ -321,7 +336,9 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		// if being used as a display object, we need to set $ locally so we can use get$() in other methods
 		if ( StructKeyExists(arguments, '$') ) {
 			set$(arguments.$);
-		};
+		}
+
+		local.isMobile = getIsMobile();
 		
 		// used to populate the 'from' point on the form
 		if ( !len(trim(arguments.start)) ) {
@@ -349,24 +366,31 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				// if viewing via mobile device that may have mapping capabilities, try to provide a device-native link to view the map
 				local.mapURL = getMapURL(latitude=local.lat, longitude=local.lng);
 				local.detailsURL = local.item.getValue('url');
+				local.image = get$().getURLForImage(
+					fileid = local.item.getValue('fileid')
+					, size = 'small'
+					, complete = true
+				);
 				if ( len(trim(arguments.start)) ) {
 					local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(arguments.start);
 				}
 
 				local.place = new Place(
 					placeName = local.item.getValue('title')
-					,latitude = local.lat
-					,longitude = local.lng
-					,streetAddress = local.item.getValue('streetAddress')
-					,addressLocality = local.item.getValue('addressLocality')
-					,addressRegion = local.item.getValue('addressRegion')
-					,postalCode = local.item.getValue('postalCode')
-					,locationTelephone = local.item.getValue('locationTelephone')
-					,locationFaxNumber = local.item.getValue('locationFaxNumber')
-					,locationEmail = local.item.getValue('locationEmail')
-					,zIndex = local.it.currentRow()
-					,detailsURL = local.detailsURL
-					,mapURL = local.mapURL
+					, latitude = local.lat
+					, longitude = local.lng
+					, streetAddress = local.item.getValue('streetAddress')
+					, addressLocality = local.item.getValue('addressLocality')
+					, addressRegion = local.item.getValue('addressRegion')
+					, postalCode = local.item.getValue('postalCode')
+					, locationTelephone = local.item.getValue('locationTelephone')
+					, locationFaxNumber = local.item.getValue('locationFaxNumber')
+					, locationEmail = local.item.getValue('locationEmail')
+					, locationImage = local.image
+					, zIndex = local.it.currentRow()
+					, detailsURL = local.detailsURL
+					, mapURL = local.mapURL
+					, isMobile = local.isMobile
 				);
 				ArrayAppend(local.places, local.place.gMapPoint());
 			}
@@ -412,14 +436,16 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		if ( len(trim(arguments.start)) ) {
 			local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(arguments.start);
 		}
+		local.isMobile = getIsMobile();
 
 		local.place = new Place(
 			placeName = arguments.name
-			,latitude = arguments.latitude
-			,longitude = arguments.longitude
-			,zIndex = 1
-			,detailsURL = local.detailsURL
-			,mapURL = local.mapURL
+			, latitude = arguments.latitude
+			, longitude = arguments.longitude
+			, zIndex = 1
+			, detailsURL = local.detailsURL
+			, mapURL = local.mapURL
+			, isMobile = local.isMobile
 		);
 
 		ArrayAppend(local.places, local.place.gMapPoint());
@@ -530,6 +556,10 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		rs = q.execute().getResult();
 		
 		return local.rs;
+	}
+
+	public boolean function getIsMobile() {
+		return IsBoolean(get$().event('muraMobileRequest')) ? get$().event('muraMobileRequest') : false;
 	}
 
 	/**
