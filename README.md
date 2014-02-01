@@ -63,6 +63,7 @@ numeric mapHeight=400
 string mapType='TERRAIN'
 numeric mapWidth=0
 string mapZoom='default'
+string contentID='' // will accept a valid contentid or filename to narrow down the section of a site you wish to display locations from
 ```
 
 ####Example Using Arguments

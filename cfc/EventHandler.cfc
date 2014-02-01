@@ -321,6 +321,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	/**
 	* dspLocationsMap()
 	* Returns a Google Map of all of Page/MuraLocation's along with the ability to get directions, etc.
+	* @contentid pass in a contentid or filename, and we'll try to get any locations in that section
 	*/
 	public any function dspLocationsMap(
 		boolean displayDirections=true
@@ -330,6 +331,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		, string mapType='TERRAIN'
 		, numeric mapWidth=0
 		, string mapZoom='default'
+		, string contentid=''
 	) output=false {
 		var local = {};
 
@@ -350,9 +352,10 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		}
 
 		local.places = ArrayNew(1);
-		local.fBean = getMuraLocationsBean($=get$());
+		local.fBean = getMuraLocationsBean($=get$(), contentid=arguments.contentid);
 		// get the feed's iterator
 		local.it = local.fBean.getIterator();
+
 		// if no locations, return empty string
 		if ( !local.it.hasNext() ) { return ''; }
 		
@@ -466,13 +469,25 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
     
 	/**
 	* getMuraLocationsBean()
+	* @contentid filter on specific section of the site
 	*/
-	public any function getMuraLocationsBean() output=false {
+	public any function getMuraLocationsBean(struct $=get$(), string contentid='') output=false {
 		var local = {};
+
 		if ( StructKeyExists(arguments, '$') ) {
 			set$(arguments.$);
 		}
-		
+
+		local.contentid = Len(arguments.contentid) 
+			? arguments.contentid 
+			: get$().content('contentid');
+
+		local.args = IsValid('uuid', local.contentid) 
+			? { contentid=local.contentid }
+			: { filename=local.contentid };
+
+		local.cBean = get$().getBean('content').loadBy(argumentCollection=local.args);
+
 		// create a dynamic feed of all Page/MuraLocation subtypes
 		local.fBean = get$().getBean('feed');
 		local.fBean.setName('');
@@ -483,12 +498,19 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		local.fBean.setShowNavOnly(true); // set to false to include content even if it's not in the navigation
 		
 		// If we're on a Folder (formerly Portal): Mura/Location, then check to see if we only want to display children of this portal...otherwise, we'll include all locations.
-		if ( listfindnocase('Portal,Folder', get$().content('type')) && get$().content('subtype') == 'MuraLocation' && YesNoFormat(get$().content('showChildrenOnly')) ) {
+		if ( Len(arguments.contentid) ) {
+			local.fBean.addAdvancedParam(
+				relationship='AND'
+				, field='tcontent.path'
+				, condition='CONTAINS'
+				, criteria=local.cBean.getValue('contentid')
+			);
+		} else if ( ListFindNoCase('Portal,Folder', local.cBean.getValue('type')) && local.cBean.getValue('subtype') == 'MuraLocation' && YesNoFormat(local.cBean.getValue('showChildrenOnly')) ) {
 			local.fBean.addAdvancedParam(
 				relationship='AND'
 				, field='tcontent.parentid'
-				, condition='eq'
-				, criteria=get$().content('contentid')
+				, condition='EQ'
+				, criteria=local.cBean.getValue('contentid')
 			);
 		}
 
