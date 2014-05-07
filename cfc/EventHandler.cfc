@@ -497,19 +497,23 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		local.fBean.setNextN(10000); // max locations to display
 		local.fBean.setShowNavOnly(true); // set to false to include content even if it's not in the navigation
 		
-		// If we're on a Folder (formerly Portal): Mura/Location, then check to see if we only want to display children of this portal...otherwise, we'll include all locations.
-		if ( Len(arguments.contentid) ) {
-			local.fBean.addAdvancedParam(
-				relationship='AND'
-				, field='tcontent.path'
-				, condition='CONTAINS'
-				, criteria=local.cBean.getValue('contentid')
-			);
-		} else if ( ListFindNoCase('Portal,Folder', local.cBean.getValue('type')) && local.cBean.getValue('subtype') == 'MuraLocation' && YesNoFormat(local.cBean.getValue('showChildrenOnly')) ) {
+		// If we're on a Folder (formerly Portal): Mura/Location, then check to see if we only want to display children of this Folder...otherwise, we'll include all locations.
+		if ( 
+			ListFindNoCase('Portal,Folder', local.cBean.getValue('type')) 
+			&& ListFindNoCase('MuraLocation,MuraLocationsMap', local.cBean.getValue('subtype'))
+			&& YesNoFormat(local.cBean.getValue('showChildrenOnly')) 
+		) {
 			local.fBean.addAdvancedParam(
 				relationship='AND'
 				, field='tcontent.parentid'
 				, condition='EQ'
+				, criteria=local.cBean.getValue('contentid')
+			);
+		} else if ( Len(arguments.contentid) ) {
+			local.fBean.addAdvancedParam(
+				relationship='AND'
+				, field='tcontent.path'
+				, condition='CONTAINS'
 				, criteria=local.cBean.getValue('contentid')
 			);
 		}

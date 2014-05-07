@@ -16,7 +16,7 @@
 	<extensions>
 		<!-- PAGE: Mura / Location -->
 		<extension type="Page" subType="MuraLocation" iconClass="icon-pushpin">
-			<attributeset name="MuraLocation Options">
+			<attributeset name="MuraLocation Options" container="Basic">
 
 				<attribute 
 					name="streetAddress"
@@ -245,7 +245,7 @@
 
 		<!-- FOLDER: Mura / LocationsMap -->
 		<extension type="Folder" subType="MuraLocationsMap" availableSubTypes="Page/MuraLocation" iconClass="icon-globe">
-			<attributeset name="MuraLocationsMap Options">
+			<attributeset name="MuraLocationsMap Options" container="Basic">
 
 				<attribute
 					name="mapWidth"
