@@ -126,7 +126,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				
 				if ( !local.matches ) {
 					// no results!
-					local.errorMessage = 'The address you entered could not be converted to a usable location for mapping. Please check the address fields on the Extended Attributes Tab and try again.';
+					local.errorMessage = 'The address you entered could not be converted to a usable location for mapping. Please check the address fields on the Basic Tab and try again.';
 				} else if ( local.matches > 1 ) {
 					// more than one match found for this address...need to narrow the results to get the right one
 					local.results = local.geoResponse.results;
@@ -137,7 +137,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 						// if there are only 2 results, and the 'formatted_address' is the same,
 						// we'll assume it's the first element in the array...so continue
 					} else {
-						local.errorMessage = 'There were #local.matches# possible matches found for the address you entered. Please review the following list of locations and re-enter your address accordingly on the Extended Attributes Tab:<br><br>';
+						local.errorMessage = 'There were #local.matches# possible matches found for the address you entered. Please review the following list of locations and re-enter your address accordingly on the Basic Tab:<br><br>';
 
 						for ( local.i=1; local.i <= local.matches; local.i++ ) {
 							local.errorMessage = local.errorMessage & '&bull;&nbsp;' & local.results[i].formatted_address & '<br>';
@@ -146,7 +146,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				};
 			} else { // NO MATCHES!
 				// Maybe user is not connected to the internet?
-				local.errorMessage = 'Sorry...we were unable to connect to Google to geoencode the address you entered on the Extended Attributes Tab. Please check your internet connection and try again.';
+				local.errorMessage = 'Sorry...we were unable to connect to Google to geoencode the address you entered on the Basic Tab. Please check your internet connection and try again.';
 			}
 
 		}
