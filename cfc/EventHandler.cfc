@@ -510,12 +510,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				, criteria=local.cBean.getValue('contentid')
 			);
 		} else if ( Len(arguments.contentid) ) {
-			local.fBean.addAdvancedParam(
-				relationship='AND'
-				, field='tcontent.path'
-				, condition='CONTAINS'
-				, criteria=local.cBean.getValue('contentid')
-			);
+			local.fBean.setContentID(local.cBean.getValue('contentid'));
 		}
 
 		local.fBean.addParam(
