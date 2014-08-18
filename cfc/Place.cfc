@@ -18,6 +18,7 @@ component accessors=true output=false {
 	property name='addressLocality' default='' type='string' hint='city';
 	property name='addressRegion' default='' type='string' hint='state';
 	property name='postalCode' default='' type='string' hint='zip';
+	property name='addressCountry' default='' type='string' hint='country';
 	property name='locationNotes' default='' type='string' hint='notes';
 	property name='detailsURL' default='' type='string';
 	property name='mapURL' default='' type='string';
@@ -38,6 +39,7 @@ component accessors=true output=false {
 	* @addressLocality city
 	* @addressRegion state
 	* @postalCode zip
+	* @addressCountry country
 	* @locationNotes brief notes or information to listed beneath the location address (e.g., Located inside Walmart)
 	* @microdataFormat getMicrodata() will return each Place wrapped in either 'li', 'span' or 'div'...the only valid options at this time
 	* @locationImage URL to an image of the location
@@ -52,6 +54,7 @@ component accessors=true output=false {
 		, string addressLocality=''
 		, string addressRegion=''
 		, string postalCode=''
+		, string addressCountry=''
 		, string locationNotes=''
 		, string detailsURL=''
 		, string mapURL=''
@@ -73,6 +76,7 @@ component accessors=true output=false {
 		setAddressLocality(arguments.addressLocality);
 		setAddressRegion(arguments.addressRegion);
 		setPostalCode(arguments.postalCode);
+		setAddressCountry(arguments.addressCountry);
 		setLocationNotes(arguments.locationNotes);
 		setDetailsURL(arguments.detailsURL);
 		setMapURL(arguments.mapURL);
@@ -150,6 +154,7 @@ component accessors=true output=false {
 	public any function getAddressLocality() output=false { return variables.addressLocality; }
 	public any function getAddressRegion() output=false { return variables.addressRegion; }
 	public any function getPostalCode() output=false { return variables.postalCode; }
+	public any function getAddressCountry() output=false { return variables.addressCountry; }
 	public any function getLocationNotes() output=false { return variables.locationNotes; }
 	public any function getDetailsURL() output=false { return variables.detailsURL; }
 	public any function getMapURL() output=false { return variables.mapURL; }

@@ -34,7 +34,10 @@
 					#HTMLEditFormat(getAddressRegion())#
 				</cfif>
 				<cfif len(trim(getPostalCode()))>
-					 #HTMLEditFormat(getPostalCode())#
+					 #HTMLEditFormat(getPostalCode())#,
+				</cfif>
+				<cfif len(trim(getAddressCountry()))>
+					#HTMLEditFormat(getAddressCountry())#
 				</cfif>
 			</p>
 		</a>

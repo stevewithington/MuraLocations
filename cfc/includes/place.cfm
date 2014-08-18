@@ -53,6 +53,9 @@
 				<cfif len(trim(getPostalCode()))>
 					 <span class="locationPostalCode" itemprop="postalCode">#HTMLEditFormat(getPostalCode())#</span>
 				</cfif>
+				<cfif len(trim(getAddressCountry()))>
+					<div class="locationAddressCountry" itemprop="addressCountry">#HTMLEditFormat(getAddressCountry())#</div>
+				</cfif>
 				<cfif len(trim(getLocationNotes()))>
 					<div class="locationNotes">#getLocationNotes()#</div>
 				</cfif>

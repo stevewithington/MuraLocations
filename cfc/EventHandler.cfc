@@ -66,6 +66,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, addressLocality = get$().content('addressLocality')
 			, addressRegion = get$().content('addressRegion')
 			, postalCode = get$().content('postalCode')
+			, addressCountry = get$().content('addressCountry')
 			, locationNotes = get$().content('locationNotes')
 			, locationTelephone = get$().content('locationTelephone')
 			, locationFaxNumber = get$().content('locationFaxNumber')
@@ -115,7 +116,8 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			local.q = replace(local.bean.getValue('streetAddress'), chr(13) & chr(10), ",", "ALL") & ',' 
 				& local.bean.getValue('addressLocality') & ',' 
 				& local.bean.getValue('addressRegion') & ' ' 
-				& local.bean.getValue('postalCode');
+				& local.bean.getValue('postalCode') & ',' 
+				& local.bean.getValue('addressCountry');
 			// geoencode the address
 			local.geo = new Geo();
 			local.geoResponse = local.geo.getResponse(local.q);
@@ -294,6 +296,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 					, addressLocality = local.item.getValue('addressLocality')
 					, addressRegion = local.item.getValue('addressRegion')
 					, postalCode = local.item.getValue('postalCode')
+					, addressCountry = local.item.getValue('addressCountry')
 					, locationTelephone = local.item.getValue('locationTelephone')
 					, locationFaxNumber = local.item.getValue('locationFaxNumber')
 					, locationEmail = local.item.getValue('locationEmail')
@@ -386,6 +389,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 					, addressLocality = local.item.getValue('addressLocality')
 					, addressRegion = local.item.getValue('addressRegion')
 					, postalCode = local.item.getValue('postalCode')
+					, addressCountry = local.item.getValue('addressCountry')
 					, locationTelephone = local.item.getValue('locationTelephone')
 					, locationFaxNumber = local.item.getValue('locationFaxNumber')
 					, locationEmail = local.item.getValue('locationEmail')
