@@ -110,9 +110,9 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 
 		// check for missing latitude and longitude
 		if ( !len(trim(local.bean.getValue('latitude'))) || !len(trim(local.bean.getValue('longitude'))) ) {
-			
+
 			// gather up the address
-			local.q = local.bean.getValue('streetAddress') & ',' 
+			local.q = replace(local.bean.getValue('streetAddress'), chr(13) & chr(10), ",", "ALL") & ',' 
 				& local.bean.getValue('addressLocality') & ',' 
 				& local.bean.getValue('addressRegion') & ' ' 
 				& local.bean.getValue('postalCode');

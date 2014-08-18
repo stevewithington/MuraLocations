@@ -22,7 +22,7 @@
 					name="streetAddress"
 					label="Street Address"
 					hint="The street address of the location."
-					type="TextBox"
+					type="TextArea"
 					defaultValue=""
 					required="false"
 					validation="None"
