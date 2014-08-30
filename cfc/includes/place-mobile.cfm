@@ -25,7 +25,7 @@
 			</cfif>
 			<p>
 				<cfif len(trim(getStreetAddress()))>
-					#HTMLEditFormat(getStreetAddress())#, 
+					#replace(HTMLEditFormat(getStreetAddress()), chr(13) & chr(10), "<br>", "ALL")#, 
 				</cfif>
 				<cfif len(trim(getAddressLocality()))>
 					#HTMLEditFormat(getAddressLocality())#, 
@@ -34,7 +34,10 @@
 					#HTMLEditFormat(getAddressRegion())#
 				</cfif>
 				<cfif len(trim(getPostalCode()))>
-					 #HTMLEditFormat(getPostalCode())#
+					 #HTMLEditFormat(getPostalCode())#,
+				</cfif>
+				<cfif len(trim(getAddressCountry()))>
+					#HTMLEditFormat(getAddressCountry())#
 				</cfif>
 			</p>
 		</a>

@@ -22,7 +22,7 @@
 					name="streetAddress"
 					label="Street Address"
 					hint="The street address of the location."
-					type="TextBox"
+					type="TextArea"
 					defaultValue=""
 					required="false"
 					validation="None"
@@ -47,7 +47,7 @@
 				<attribute 
 					name="addressRegion"
 					label="State / Region"
-					hint="The State or Region of the location (e.g., CA for California, UK for United Kingdom, etc.)"
+					hint="The State or Region of the location (e.g., CA for California, etc.)"
 					type="TextBox"
 					defaultValue=""
 					required="false"
@@ -61,6 +61,19 @@
 					name="postalCode"
 					label="Postal Code"
 					hint="The Postal/Zip Code of the location."
+					type="TextBox"
+					defaultValue=""
+					required="false"
+					validation="None"
+					regex=""
+					message=""
+					optionList=""
+					optionLableList="" />
+
+				<attribute 
+					name="addressCountry"
+					label="Country"
+					hint="The Country of the location"
 					type="TextBox"
 					defaultValue=""
 					required="false"

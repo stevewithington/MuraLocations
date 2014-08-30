@@ -42,7 +42,7 @@
 			<!--- Address --->
 			<div class="locationAddressWrapper" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
 				<cfif len(trim(getStreetAddress()))>
-					<div class="locationStreetAddress" itemprop="streetAddress">#HTMLEditFormat(getStreetAddress())#</div>
+					<div class="locationStreetAddress" itemprop="streetAddress">#replace(HTMLEditFormat(getStreetAddress()), chr(13) & chr(10), "<br>", "ALL")#</div>
 				</cfif>
 				<cfif len(trim(getAddressLocality()))>
 					<span class="locationAddressLocality" itemprop="addressLocality">#HTMLEditFormat(getAddressLocality())#</span>, 
@@ -52,6 +52,9 @@
 				</cfif>
 				<cfif len(trim(getPostalCode()))>
 					 <span class="locationPostalCode" itemprop="postalCode">#HTMLEditFormat(getPostalCode())#</span>
+				</cfif>
+				<cfif len(trim(getAddressCountry()))>
+					<div class="locationAddressCountry" itemprop="addressCountry">#HTMLEditFormat(getAddressCountry())#</div>
 				</cfif>
 				<cfif len(trim(getLocationNotes()))>
 					<div class="locationNotes">#getLocationNotes()#</div>
