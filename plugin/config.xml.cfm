@@ -15,7 +15,7 @@
 		<name>MuraLocations</name>
 		<package>MuraLocations</package>
 		<directoryFormat>packageOnly</directoryFormat>
-		<version>3.1.1</version>
+		<version>3.2</version>
 		<provider>Steve Withington</provider>
 		<providerURL>http://stephenwithington.com</providerURL>
 		<category>Application</category>

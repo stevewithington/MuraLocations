@@ -22,7 +22,12 @@ local.$.loadShadowboxJS(); // for primary image
 		</cfif>
 
 		<!--- Content --->
-		#local.body#
+		#local.$.renderEditableAttribute(
+			attribute='body'
+			, type='HTMLEditor'
+			, label='Content'
+			, enableMuraTag=true
+		)#
 		
 		<!--- Location Info --->
 		<!--- <div class="locationInfoWrapper">
