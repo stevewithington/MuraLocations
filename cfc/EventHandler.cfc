@@ -329,6 +329,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	* dspLocationsMap()
 	* Returns a Google Map of all of Page/MuraLocation's along with the ability to get directions, etc.
 	* @contentid pass in a contentid or filename, and we'll try to get any locations in that section
+	* @locations an array of structs
 	*/
 	public any function dspLocationsMap(
 		boolean displayDirections=true
@@ -339,6 +340,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		, numeric mapWidth=0
 		, string mapZoom='default'
 		, string contentid=''
+		, array locations=[]
 	) output=false {
 		var local = {};
 
@@ -358,54 +360,77 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			}
 		}
 
-		local.places = ArrayNew(1);
-		local.fBean = getMuraLocationsBean($=get$(), contentid=arguments.contentid);
-		// get the feed's iterator
-		local.it = local.fBean.getIterator();
+		// container for 'places' that will be mapped
+		local.places = [];
 
-		// if no locations, return empty string
-		if ( !local.it.hasNext() ) { return ''; }
-		
-		// loop over each Page/MuraLocation and add it to the places array
-		while ( local.it.hasNext() ) {
-			local.item = local.it.next();
+		if ( StructKeyExists(arguments, 'locations') && ArrayLen(arguments.locations) ) {
 
-			if ( ListFindNoCase('Portal,Folder', get$().content('type')) || YesNoFormat(local.item.getValue('displayOnAllLocationsMap')) ) {
-				local.lat = local.item.getValue('latitude');
-				local.lng = local.item.getValue('longitude');
-				// if viewing via mobile device that may have mapping capabilities, try to provide a device-native link to view the map
-				local.mapURL = getMapURL(latitude=local.lat, longitude=local.lng);
-				local.detailsURL = local.item.getValue('url');
-				local.image = get$().getURLForImage(
-					fileid = local.item.getValue('fileid')
-					, size = 'small'
-					, complete = true
-				);
-				if ( len(trim(arguments.start)) ) {
-					local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(arguments.start);
+			// START : Using arguments.locations
+				for ( var location in arguments.locations ) {
+					if ( IsStruct(location) && StructKeyExists(location, 'placeName') && StructKeyExists(location, 'latitude') && StructKeyExists(location, 'longitude') ) {
+						 // if viewing via mobile device that may have mapping capabilities, try to provide a device-native link to view the map
+						location.mapURL = getMapURL(latitude=location.latitude, longitude=location.longitude);
+						location.isMobile = local.isMobile;
+						local.place = new Place(argumentCollection=location);
+						ArrayAppend(local.places, local.place.gMapPoint());
+					}
 				}
+			// END: Using arguments.locations
+		
+		} else {
 
-				local.place = new Place(
-					placeName = local.item.getValue('title')
-					, latitude = local.lat
-					, longitude = local.lng
-					, streetAddress = local.item.getValue('streetAddress')
-					, addressLocality = local.item.getValue('addressLocality')
-					, addressRegion = local.item.getValue('addressRegion')
-					, postalCode = local.item.getValue('postalCode')
-					, addressCountry = local.item.getValue('addressCountry')
-					, locationTelephone = local.item.getValue('locationTelephone')
-					, locationFaxNumber = local.item.getValue('locationFaxNumber')
-					, locationEmail = local.item.getValue('locationEmail')
-					, locationImage = local.image
-					, zIndex = local.it.currentRow()
-					, detailsURL = local.detailsURL
-					, mapURL = local.mapURL
-					, isMobile = local.isMobile
-				);
-				ArrayAppend(local.places, local.place.gMapPoint());
-			}
-		};
+			// START: Using MuraLocations
+
+				local.fBean = getMuraLocationsBean($=get$(), contentid=arguments.contentid);
+				// get the feed's iterator
+				local.it = local.fBean.getIterator();
+
+				// if no locations, return empty string
+				if ( !local.it.hasNext() ) { return ''; }
+				
+				// loop over each Page/MuraLocation and add it to the places array
+				while ( local.it.hasNext() ) {
+					local.item = local.it.next();
+
+					if ( ListFindNoCase('Portal,Folder', get$().content('type')) || YesNoFormat(local.item.getValue('displayOnAllLocationsMap')) ) {
+						local.lat = local.item.getValue('latitude');
+						local.lng = local.item.getValue('longitude');
+						// if viewing via mobile device that may have mapping capabilities, try to provide a device-native link to view the map
+						local.mapURL = getMapURL(latitude=local.lat, longitude=local.lng);
+						local.detailsURL = local.item.getValue('url');
+						local.image = get$().getURLForImage(
+							fileid = local.item.getValue('fileid')
+							, size = 'small'
+							, complete = true
+						);
+						if ( len(trim(arguments.start)) ) {
+							local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(arguments.start);
+						}
+
+						local.place = new Place(
+							placeName = local.item.getValue('title')
+							, latitude = local.lat
+							, longitude = local.lng
+							, streetAddress = local.item.getValue('streetAddress')
+							, addressLocality = local.item.getValue('addressLocality')
+							, addressRegion = local.item.getValue('addressRegion')
+							, postalCode = local.item.getValue('postalCode')
+							, addressCountry = local.item.getValue('addressCountry')
+							, locationTelephone = local.item.getValue('locationTelephone')
+							, locationFaxNumber = local.item.getValue('locationFaxNumber')
+							, locationEmail = local.item.getValue('locationEmail')
+							, locationImage = local.image
+							, zIndex = local.it.currentRow()
+							, detailsURL = local.detailsURL
+							, mapURL = local.mapURL
+							, isMobile = local.isMobile
+						);
+						ArrayAppend(local.places, local.place.gMapPoint());
+					}
+				};
+
+			// END : Using MuraLocations
+		}
 		
 		// create a new Google Map with the array of places
 		local.gMap = new GoogleMap(
@@ -423,7 +448,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	}
 
 	/**
-	* dspMap()
+	* dspSimpleMap()
 	* A simple method for devs to display a simple GMap.
 	* Should pass in a location 'name', as well as the 'latitude' + 'longitude' of the place
 	*/
