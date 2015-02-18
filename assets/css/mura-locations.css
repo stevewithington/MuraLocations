@@ -8,7 +8,7 @@
 *
 */
 .muraLocationOuterWrapper, .muraLocationOuterWrapperMobile {clear:both;display:block;}
-.muraLocationOuterWrapper .locationPlace, .muraLocationOuterWrapperMobile .locationPlace {padding:0 0.5em 1em 0;min-width:160px;float:left;}
+/*.muraLocationOuterWrapper .locationPlace, .muraLocationOuterWrapperMobile .locationPlace {padding:0 0.5em 1em 0;min-width:160px;float:left;}*/
 .muraLocationOuterWrapper .locationPlace h3, 
 .gm-style-iw .infoWindowWrapper .locationPlace h3.locationName
 , .gm-style-iw .infoWindowWrapper .locationPlace h3.locationName span {font-size:18px;}
@@ -75,10 +75,10 @@
 /* NON-mobile-specific formatting */
 .locationBrowserFormat {}
 .locationBrowserFormat .locationWrapper {padding:1em 0 0;margin:1em 0;border-top:1px solid #ddd;}
+.locationBrowserFormat .locationPlace {clear:both;display:block;padding:0 0.5em 1em 0;}
 .locationBrowserFormat h4 {margin:0;font-size:1.5em;}
 /* mobile-specific formatting */
 .locationMobileFormat {}
-
 /* fix primary nav from overlapping main content on jQMobile */
 #navPrimary.ui-listview {margin-top:1em;}
 /* fix for sub nav from overlapping main content on jQMobile */

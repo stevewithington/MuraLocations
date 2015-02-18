@@ -237,7 +237,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			get$().event('findLocationRequestSubmitted',false);
 		}
 		if (get$().event('findLocationRequestSubmitted')){
-			get$().announceEvent('onFindLocations', get$());
+			get$().announceEvent('onFindLocations');
 		}
 
 		savecontent variable='local.str' {
