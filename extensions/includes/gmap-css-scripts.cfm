@@ -11,10 +11,18 @@
 </cfscript></cfsilent>
 <cfoutput>
 	<style type="text/css">
-		##gmapWrapper_#local.thisid#.gmapWrapper .gmapCanvas {width:#local.mapWidth#;height:#local.mapHeight# !important;}
-		##gmapWrapper_#local.thisid#.gmapWrapper .gmapDirectionsFormWrapper {width:#local.mapWidth# !important;}
-		/* there's an issue with Bootstrap interferring with GMap's infoWindow https://github.com/twitter/bootstrap/issues/2410 */
-		img[src*="gstatic.com/"], img[src*="googleapis.com/"] {max-width: 99999px;}
+		/* categories */
+		.category-filters { width: auto; float:right; }
+		.category-filters .category-filter-wrapper { width: auto; float:left; padding: 0.5em 0 0.5em 0.5em; margin: 0.5em 0 0.5em 0.5em; }
+		.category-filters .category-filter-wrapper label.category-filter-label {}
+		.category-filters .category-filter-wrapper label.category-filter-label input.category-filter-option {}
+
+		/* gmap */
+		.gmap-wrapper .gmap-canvas .marker { visibility: hidden; }
+		.gmap-wrapper .gmap-canvas { width: #local.mapWidth#; height: #local.mapHeight# !important; }
+
+		/* Bootstrap + GMap's infoWindow issue - https://github.com/twitter/bootstrap/issues/2410 */
+		img[src*="gstatic.com/"], img[src*="googleapis.com/"] { max-width: 99999px; }
 	</style>
 
 	<script type="text/javascript">
@@ -48,7 +56,7 @@
 
 		var findOne = function (haystack, arr) {
 			return arr.some(function (v) {
-					return haystack.indexOf(v) >= 0;
+				return haystack.indexOf(v) >= 0;
 			});
 		};
 
@@ -58,11 +66,9 @@
 			var render_map = function ($el) {
 				var $markers = $el.find('.marker');
 				var args = {
-						center: new google.maps.LatLng(0, 0),
-						backgroundColor: '##ffffff',
-						zoom: 4,
-						mapTypeId: google.maps.MapTypeId.ROADMAP,
-
+						center: new google.maps.LatLng(0, 0)
+						, backgroundColor: '##ffffff'
+						, mapTypeId: google.maps.MapTypeId.#UCase(arguments.mapType)#
 				};
 
 				// Create map	        	
@@ -87,9 +93,10 @@
 				var icon = null;
 
 				var marker = new google.maps.Marker({
-						position: latlng,
-						map: map,
-						filter: {
+						position: latlng
+						, animation: google.maps.Animation.DROP
+						, map: map
+						, filter: {
 							categories: $marker.data('categories').toString()
 						}
 				});
@@ -124,7 +131,7 @@
 
 			var map = null;
 			
-			$('.gmapCanvas').each(function () {
+			$('.gmap-canvas').each(function () {
 					map = render_map($(this));
 			});
 

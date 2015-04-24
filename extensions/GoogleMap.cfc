@@ -123,7 +123,7 @@ component accessors=true output=false {
 
 		savecontent variable='local.str' {
 			include 'includes/gmap.cfm';
-			include 'includes/gmapScript.cfm';
+			include 'includes/gmap-css-scripts.cfm';
 		};
 		variables.map = local.str;
 	}

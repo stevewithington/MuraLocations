@@ -15,9 +15,8 @@
 <cfoutput>
 	<extensions>
 		<!-- PAGE: Mura / Location -->
-		<extension type="Page" subType="MuraLocation" iconClass="icon-pushpin">
+		<extension type="Page" subType="MuraLocation" iconClass="icon-pushpin" hasSummary="false" hasBody="false" hasAssocFile="false" hasConfigurator="false">
 			<attributeset name="MuraLocation Options" container="Basic">
-
 				<attribute 
 					name="streetAddress"
 					label="Street Address"
@@ -122,21 +121,6 @@
 					optionList=""
 					optionLableList="" />
 
-				<!--
-				<attribute 
-					name="locationNotes"
-					label="Location Notes"
-					hint="Notes to appear in the map's Info Window."
-					type="HTMLEditor"
-					defaultValue=""
-					required="false"
-					validation=""
-					regex=""
-					message=""
-					optionList=""
-					optionLableList="" />
-				-->
-
 				<attribute 
 					name="latitude"
 					label="Latitude"
@@ -189,7 +173,7 @@
 					optionList=""
 					optionLabelList="" />
 
-				<attribute 
+				<!--- <attribute 
 					name="mapZoom"
 					label="Default Zoom"
 					hint="You can override the default behaviour of auto-fit the location here."
@@ -200,14 +184,14 @@
 					regex=""
 					message=""
 					optionList="default^0^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18"
-					optionLabelList="Auto Fit To Viewport^0 (Fully Zoomed Out-Earth Map)^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18 (Fully Zoomed In)" />
+					optionLabelList="Auto Fit To Viewport^0 (Fully Zoomed Out-Earth Map)^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18 (Fully Zoomed In)" /> --->
 
 				<attribute 
 					name="mapType"
 					label="Map Type"
 					hint="Type of Google Map to be displayed."
 					type="SelectBox"
-					defaultValue="TERRAIN"
+					defaultValue="ROADMAP"
 					required="false"
 					validation="None"
 					regex=""
@@ -216,50 +200,23 @@
 					optionLabelList="Roadmap^Satellite^Hybrid^Terrain" />
 
 				<attribute 
-					name="displayDirections"
-					label="Display Directions"
-					hint="Should users be able to see directions to the location(s)?"
-					type="RadioGroup"
-					defaultValue="true"
+					name="mapInfoWindow"
+					label="Info Window"
+					hint="If you enter anything here, it will show in the Info Window, otherwise, the Info Window will use the address information entered above."
+					type="HTMLEditor"
+					defaultValue=""
 					required="false"
 					validation="None"
 					regex=""
 					message=""
-					optionList="false^true"
-					optionLabelList="No^Yes" />
-
-				<attribute 
-					name="displayTravelMode"
-					label="Display Travel Mode Options"
-					hint="Should the various travel mode options be displayed when showing directions (e.g. Driving, Walking or Bicycling)?"
-					type="RadioGroup"
-					defaultValue="true"
-					required="false"
-					validation="None"
-					regex=""
-					message=""
-					optionList="false^true"
-					optionLabelList="No^Yes" />
-
-				<attribute 
-					name="displayOnAllLocationsMap"
-					label="Show on 'All Locations Map' Display Object?"
-					hint="Should this location appear on the 'Locations Map' display object? NOTE: If this location is a child of a Folder/MuraLocation, then this location WILL appear on the Folder's map IF the 'Display' setting on the Basic Tab is set to Yes."
-					type="RadioGroup"
-					defaultValue="true"
-					required="false"
-					validation="None"
-					regex=""
-					message=""
-					optionList="false^true"
-					optionLabelList="No^Yes" />
+					optionList=""
+					optionLableList="" />
 			</attributeset>
 		</extension>
 
 		<!-- FOLDER: Mura / LocationsMap -->
-		<extension type="Folder" subType="MuraLocationsMap" availableSubTypes="Page/MuraLocation" iconClass="icon-globe">
+		<extension type="Folder" subType="MuraLocationsMap" availableSubTypes="Page/MuraLocation" iconClass="icon-globe" hasSummary="false" hasBody="false" hasAssocFile="false" hasConfigurator="false">
 			<attributeset name="MuraLocationsMap Options" container="Basic">
-
 				<attribute
 					name="mapWidth"
 					label="Map Width"
@@ -286,7 +243,7 @@
 					optionList=""
 					optionLabelList="" />
 
-				<attribute
+				<!--- <attribute
 					name="mapZoom"
 					label="Default Zoom"
 					hint="You can override the default behaviour of auto-fit all locations here."
@@ -297,59 +254,20 @@
 					regex=""
 					message=""
 					optionList="default^0^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18"
-					optionLabelList="Auto Fit All Locations To Viewport^0 (Fully Zoomed Out-Earth Map)^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18 (Fully Zoomed In)" />
+					optionLabelList="Auto Fit All Locations To Viewport^0 (Fully Zoomed Out-Earth Map)^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18 (Fully Zoomed In)" /> --->
 
 				<attribute
 					name="mapType"
 					label="Map Type"
 					hint="Type of Google Map to be displayed."
 					type="SelectBox"
-					defaultValue="TERRAIN"
+					defaultValue="ROADMAP"
 					required="false"
 					validation="None"
 					regex=""
 					message=""
 					optionList="ROADMAP^SATELLITE^HYBRID^TERRAIN"
 					optionLabelList="Roadmap^Satellite^Hybrid^Terrain" />
-
-				<attribute
-					name="displayDirections"
-					label="Display Directions"
-					hint="Should users be able to see directions to the location(s)?"
-					type="RadioGroup"
-					defaultValue="true"
-					required="false"
-					validation="None"
-					regex=""
-					message=""
-					optionList="false^true"
-					optionLabelList="No^Yes" />
-
-				<attribute
-					name="displayTravelMode"
-					label="Display Travel Mode Options"
-					hint="Should the various travel mode options be displayed when showing directions (e.g. Driving, Walking or Bicycling)?"
-					type="RadioGroup"
-					defaultValue="true"
-					required="false"
-					validation="None"
-					regex=""
-					message=""
-					optionList="false^true"
-					optionLabelList="No^Yes" />
-
-				<attribute 
-					name="showChildrenOnly"
-					label="Show only children of this Folder?"
-					hint="Should this map ONLY show MuraLocations that are direct children of this Folder?"
-					type="RadioGroup"
-					defaultValue="false"
-					required="false"
-					validation="None"
-					regex=""
-					message=""
-					optionList="false^true"
-					optionLabelList="No^Yes" />
 			</attributeset>
 		</extension>
 	</extensions>

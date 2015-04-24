@@ -26,7 +26,7 @@
 		<!--- Location Content --->
 		<div class="locationContentWrapper">
 			<!--- Location Name --->
-			<h2 class="locationName">
+			<h4 class="locationName">
 				<cfif len(trim(getDetailsURL()))>
 					<a class="locationDetailsURL" href="#getDetailsURL()#" itemprop="url">
 						<span itemprop="name">#HTMLEditFormat(getPlaceName())#</span>
@@ -34,7 +34,7 @@
 				<cfelse>
 					<span itemprop="name">#HTMLEditFormat(getPlaceName())#</span>
 				</cfif>
-			</h2>
+			</h4>
 			<!--- Distance --->
 			<cfif len(trim(getLocationDistance()))>
 				<p class="ui-li-aside"><strong>#getLocationDistance()#</strong> miles</p>

@@ -55,7 +55,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, complete = true
 		);
 
-		// build the map, directions, etc.
+		// build the map, etc.
 		local.places = [];
 		local.rsCategories = get$().content().getCategoriesQuery();
 		local.place = new Place(
@@ -73,6 +73,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, locationFaxNumber = get$().content('locationFaxNumber')
 			, locationEmail = get$().content('locationEmail')
 			, locationImage = local.image
+			, infoWindow = get$().content('mapInfoWindow')
 			, isMobile = local.isMobile
 			, categories = ListToArray(ValueList(local.rsCategories.name))
 		);
@@ -82,12 +83,10 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		local.gMap = new GoogleMap(
 			places=local.places
 			, mapType = get$().content('mapType')
-			, displayDirections = get$().content('displayDirections')
-			, displayTravelMode = get$().content('displayTravelMode')
 			, start = get$().event('start')
 			, mapWidth = get$().content('mapWidth')
 			, mapHeight = get$().content('mapHeight')
-			, mapZoom = get$().content('mapZoom')
+			//, mapZoom = get$().content('mapZoom')
 		);
 		
 		// if you don't need anything fancy, just use this:
@@ -189,14 +188,12 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		);
 		return local.body & dspLocationsMap(
 			mapType = get$().content('mapType')
-			, displayDirections = get$().content('displayDirections')
-			, displayTravelMode = get$().content('displayTravelMode')
 			, start = get$().event('start')
 			, mapWidth = get$().content('mapWidth')
 			, mapHeight = get$().content('mapHeight')
-			, mapZoom = get$().content('mapZoom')
+			//, mapZoom = get$().content('mapZoom')
 			, displayCategoryFilter = true
-		); // need to allow configuration of displayCategoryFilter
+		);
 	}
 
 	// Backwards compatibility
@@ -319,6 +316,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 					, mapURL = getMapURL(local.item.getValue('latitude'),local.item.getValue('longitude'))
 					, locationDistance = local.rs.distance[local.i]
 					, microDataFormat = local.microDataFormat
+					, infoWindow = local.item.getValue('mapInfoWindow')
 					, isMobile = local.isMobile
 					, categories = ListToArray(ValueList(local.rsCategories.name))
 				);
@@ -341,16 +339,14 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	
 	/**
 	* dspLocationsMap()
-	* Returns a Google Map of all of Page/MuraLocation's along with the ability to get directions, etc.
+	* Returns a Google Map of all of Page/MuraLocation's, etc.
 	* @contentid pass in a contentid or filename, and we'll try to get any locations in that section
 	* @locations an array of structs
 	*/
 	public any function dspLocationsMap(
-		boolean displayDirections=true
-		, boolean displayTravelMode=true
-		, string start=''
+		string start=''
 		, numeric mapHeight=400
-		, string mapType='TERRAIN'
+		, string mapType='ROADMAP'
 		, numeric mapWidth=0
 		, string mapZoom='default'
 		, string contentid=''
@@ -383,7 +379,6 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			// START : Using arguments.locations
 				for ( var location in arguments.locations ) {
 					if ( IsStruct(location) && StructKeyExists(location, 'placeName') && StructKeyExists(location, 'latitude') && StructKeyExists(location, 'longitude') ) {
-						 // if viewing via mobile device that may have mapping capabilities, try to provide a device-native link to view the map
 						location.mapURL = getMapURL(latitude=location.latitude, longitude=location.longitude);
 						location.isMobile = local.isMobile;
 						local.place = new Place(argumentCollection=location);
@@ -407,7 +402,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				while ( local.it.hasNext() ) {
 					local.item = local.it.next();
 
-					if ( ListFindNoCase('Portal,Folder', get$().content('type')) || YesNoFormat(local.item.getValue('displayOnAllLocationsMap')) ) {
+					//if ( ListFindNoCase('Portal,Folder', get$().content('type')) || YesNoFormat(local.item.getValue('displayOnAllLocationsMap')) ) {
 						local.lat = local.item.getValue('latitude');
 						local.lng = local.item.getValue('longitude');
 						// if viewing via mobile device that may have mapping capabilities, try to provide a device-native link to view the map
@@ -441,11 +436,12 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 							, zIndex = local.it.currentRow()
 							, detailsURL = local.mapURL
 							, mapURL = local.mapURL
+							, infoWindow = local.item.getValue('mapInfoWindow')
 							, isMobile = local.isMobile
 							, categories = ListToArray(ValueList(local.rsCategories.name))
 						);
 						ArrayAppend(local.places, local.place.gMapPoint());
-					}
+					//}
 				}
 
 			// END : Using MuraLocations
@@ -455,8 +451,6 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		local.gMap = new GoogleMap(
 			places=local.places
 			, mapType = arguments.mapType
-			, displayDirections = arguments.displayDirections
-			, displayTravelMode = arguments.displayTravelMode
 			, start = arguments.start
 			, mapWidth = arguments.mapWidth
 			, mapHeight = arguments.mapHeight
@@ -476,12 +470,11 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		string name='Blue River Interactive Group, Inc.'
 		, numeric latitude=38.58439200000001
 		, numeric longitude=-121.284517
-		, boolean displayDirections=true
-		, boolean displayTravelMode=true
 		, string start=''
 		, numeric mapHeight=400
-		, string mapType='TERRAIN'
+		, string mapType='ROADMAP'
 		, numeric mapWidth=0
+		, string infoWindow=''
 		, string mapZoom='default'
 	) output=false {
 		var local = {};
@@ -495,6 +488,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, zIndex = 1
 			, detailsURL = local.mapURL
 			, mapURL = local.mapURL
+			, infoWindow = arguments.infoWindow
 			, isMobile = local.isMobile
 		);
 
@@ -503,8 +497,6 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		local.gMap = new GoogleMap(
 			places=local.places
 			, mapType = arguments.mapType
-			, displayDirections = arguments.displayDirections
-			, displayTravelMode = arguments.displayTravelMode
 			, start = arguments.start
 			, mapWidth = arguments.mapWidth
 			, mapHeight = arguments.mapHeight
@@ -548,7 +540,6 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		if ( 
 			ListFindNoCase('Portal,Folder', local.cBean.getValue('type')) 
 			&& ListFindNoCase('MuraLocation,MuraLocationsMap', local.cBean.getValue('subtype'))
-			&& YesNoFormat(local.cBean.getValue('showChildrenOnly')) 
 		) {
 			local.fBean.addParam(
 				relationship='AND'

@@ -102,19 +102,19 @@ component accessors=true output=false {
 		var local = {};
 		// future implementation could allow for custom infoWindow contents
 		if ( len(trim(arguments.infoWindow)) ) {
-			variables.infoWindow = arguments.infoWindow;
+			variables.infoWindow = Len(Trim(getDetailsURL()))
+				?	'<h4 class="locationName"><a class="locationDetailsURL" href="#getDetailsURL()#" itemprop="url"><span itemprop="name">#HTMLEditFormat(getPlaceName())#</span></a></h4>' & arguments.infoWindow
+				: arguments.infoWindow;
 		} else {
 			variables.infoWindow = getMicrodata();
 		};
 	}
-	
+
 	/**
 	* gMapPoint()
 	* Used for populating a Google Map...will be serialized as JSON array first
 	*/
 	public any function gMapPoint() output=false {
-		//return [getPlaceName(),getLatitude(),getLongitude(),getZIndex(),getIcon(),getInfoWindow()];
-		//["PlaceName","Lat","Lng","ZIndex","Icon","InfoWindow","Categories"]
 		return {
 			'placename'=getPlaceName()
 			, 'lat'=getLatitude()

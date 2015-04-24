@@ -41,12 +41,6 @@
 				displaymethod="dspLocationsMap" 
 				persist="false" />
 
-			<displayobject 
-				name="Find Locations Form" 
-				component="extensions.EventHandler"
-				displaymethod="dspFindLocationsForm" 
-				persist="false" />
-
 		</displayobjects>
 
 		<!-- Custom Class Extensions -->
