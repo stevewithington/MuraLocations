@@ -2,7 +2,7 @@
 * 
 * This file is part of MuraLocations TM
 *
-* Copyright 2010-2014 Stephen J. Withington, Jr.
+* Copyright 2010-2015 Stephen J. Withington, Jr.
 * Licensed under the Apache License, Version v2.0
 * http://www.apache.org/licenses/LICENSE-2.0
 *
@@ -30,6 +30,7 @@ component accessors=true output=false {
 	property name='microDataFormat' default='li' type='string';
 	property name='infoWindow' default='' type='string';
 	property name='isMobile' default=false type='boolean';
+	property name='categories' default='' type='any';
 
 	/**
 	* init()
@@ -66,6 +67,7 @@ component accessors=true output=false {
 		, string microDataFormat='div'
 		, string infoWindow=''
 		, boolean isMobile=false
+		, array categories=[]
 	) output=false {
 		setPlaceName(arguments.placeName);
 		setLatitude(arguments.latitude);
@@ -88,6 +90,7 @@ component accessors=true output=false {
 		setMicroDataFormat(arguments.microDataFormat);
 		setInfoWindow(arguments.infoWindow);
 		setIsMobile(arguments.isMobile);
+		setCategories(arguments.categories)
 		return this;
 	}
 	
@@ -110,7 +113,17 @@ component accessors=true output=false {
 	* Used for populating a Google Map...will be serialized as JSON array first
 	*/
 	public any function gMapPoint() output=false {
-		return [getPlaceName(),getLatitude(),getLongitude(),getZIndex(),getIcon(),getInfoWindow()];
+		//return [getPlaceName(),getLatitude(),getLongitude(),getZIndex(),getIcon(),getInfoWindow()];
+		//["PlaceName","Lat","Lng","ZIndex","Icon","InfoWindow","Categories"]
+		return {
+			'placename'=getPlaceName()
+			, 'lat'=getLatitude()
+			, 'lng'=getLongitude()
+			, 'zindex'=getZIndex()
+			, 'icon'=getIcon()
+			, 'infowindow'=getInfoWindow()
+			, 'categories'=getCategories()
+		}
 	}
 	
 	/**
@@ -166,6 +179,7 @@ component accessors=true output=false {
 	public any function getMicroDataFormat() output=false { return variables.microDataFormat; }
 	public any function getInfoWindow() output=false { return variables.infoWindow; }
 	public any function getIsMobile() output=false { return StructKeyExists(variables, 'isMobile') ?variables.isMobile : false; }
+	public any function getCategories() output=false { return variables.categories }
 
 	/**
 	* getProperties()

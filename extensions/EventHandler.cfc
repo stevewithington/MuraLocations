@@ -2,7 +2,7 @@
 * 
 * This file is part of MuraLocations TM
 *
-* Copyright 2010-2014 Stephen J. Withington, Jr.
+* Copyright 2010-2015 Stephen J. Withington, Jr.
 * Licensed under the Apache License, Version v2.0
 * http://www.apache.org/licenses/LICENSE-2.0
 *
@@ -57,6 +57,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 
 		// build the map, directions, etc.
 		local.places = [];
+		local.rsCategories = get$().content().getCategoriesQuery();
 		local.place = new Place(
 			placeName = get$().content('title')
 			, latitude = get$().content('latitude')
@@ -67,11 +68,13 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, postalCode = get$().content('postalCode')
 			, addressCountry = get$().content('addressCountry')
 			, locationNotes = get$().content('locationNotes')
+			, detailsURL = getMapURL(latitude=get$().content('latitude'), longitude=get$().content('longitude'))
 			, locationTelephone = get$().content('locationTelephone')
 			, locationFaxNumber = get$().content('locationFaxNumber')
 			, locationEmail = get$().content('locationEmail')
 			, locationImage = local.image
 			, isMobile = local.isMobile
+			, categories = ListToArray(ValueList(local.rsCategories.name))
 		);
 		
 		ArrayAppend(local.places, local.place.gMapPoint());
@@ -192,7 +195,8 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, mapWidth = get$().content('mapWidth')
 			, mapHeight = get$().content('mapHeight')
 			, mapZoom = get$().content('mapZoom')
-		);
+			, displayCategoryFilter = true
+		); // need to allow configuration of displayCategoryFilter
 	}
 
 	// Backwards compatibility
@@ -267,31 +271,37 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			} else {
 				if ( IsBoolean(get$().event('usingGeolocation')) && get$().event('usingGeolocation') ) {
 					get$().event('currentLocation',local.currentAddress);
-				};
+				}
 				WriteOutput('<div class="subheading">Locations nearest: <em>#HTMLEditFormat($.event('start'))#</em></div>');
-			};
+			}
 
 			if ( local.isMobile ) {
 				WriteOutput('<ul data-role="listview" data-inset="true" data-theme="b" data-content-theme="d">');
 			} else {
 				WriteOutput('<div data-role="collapsible-set" data-theme="b" data-content-theme="d">');
-			};
+			}
 		
 			for (local.i=1; local.i <= local.rs.recordcount; local.i++) {
 				local.expand = false;
+
 				if ( local.i eq 1 ) { 
 					local.expand = true;
 				}
+
 				local.item = get$().getBean('content').loadBy(contentid=local.rs.contentid[local.i]);
-				local.detailsURL = get$().createHREF(filename=local.item.getValue('filename'));
+				local.detailsURL = getMap(latitude=local.item.getValue('latitude'), longitude=local.item.getValue('longitude'));
 				local.image = get$().getURLForImage(
 					fileid = local.item.getValue('fileid')
 					, size = 'small'
 					, complete = true
 				);
+
 				if ( len(trim(get$().event('start'))) ) {
-					local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(get$().event('start'));
+					local.detailsURL = getMap(latitude=local.item.getValue('latitude'), longitude=local.item.getValue('longitude'), saddr=get$().event('start'));
 				}
+
+				local.rsCategories = local.item.getCategoriesQuery();
+
 				local.place = new Place(
 					placeName = local.item.getValue('title')
 					, latitude = local.item.getValue('latitude')
@@ -310,9 +320,11 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 					, locationDistance = local.rs.distance[local.i]
 					, microDataFormat = local.microDataFormat
 					, isMobile = local.isMobile
+					, categories = ListToArray(ValueList(local.rsCategories.name))
 				);
 				WriteOutput(local.place.getMicrodata(expand=local.expand));
-			};
+			}
+
 			if ( getIsMobile() ) {
 				WriteOutput('</ul>');
 				WriteOutput('<a href="#get$().content('url')#" data-role="button" data-icon="search" data-theme="e" rel="external">Search Again</a>');
@@ -320,8 +332,10 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			} else {
 				WriteOutput('</div>');
 				WriteOutput('<div class="searchAgainWrapper"><a class="geoButton btn btn-primary" href="#get$().content('url')#">Search Again</a></div>');
-			};
-		};
+			}
+
+		}
+
 		return local.str;
 	}
 	
@@ -341,6 +355,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		, string mapZoom='default'
 		, string contentid=''
 		, array locations=[]
+		, boolean displayCategoryFilter=true
 	) output=false {
 		var local = {};
 
@@ -397,15 +412,18 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 						local.lng = local.item.getValue('longitude');
 						// if viewing via mobile device that may have mapping capabilities, try to provide a device-native link to view the map
 						local.mapURL = getMapURL(latitude=local.lat, longitude=local.lng);
-						local.detailsURL = local.item.getValue('url');
+
 						local.image = get$().getURLForImage(
 							fileid = local.item.getValue('fileid')
 							, size = 'small'
 							, complete = true
 						);
+
 						if ( len(trim(arguments.start)) ) {
-							local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(arguments.start);
+							local.mapURL = getMapURL(latitude=local.item.getValue('latitude'), longitude=local.item.getValue('longitude'), saddr=get$().event('start'));
 						}
+
+						local.rsCategories = local.item.getCategoriesQuery();
 
 						local.place = new Place(
 							placeName = local.item.getValue('title')
@@ -421,13 +439,14 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 							, locationEmail = local.item.getValue('locationEmail')
 							, locationImage = local.image
 							, zIndex = local.it.currentRow()
-							, detailsURL = local.detailsURL
+							, detailsURL = local.mapURL
 							, mapURL = local.mapURL
 							, isMobile = local.isMobile
+							, categories = ListToArray(ValueList(local.rsCategories.name))
 						);
 						ArrayAppend(local.places, local.place.gMapPoint());
 					}
-				};
+				}
 
 			// END : Using MuraLocations
 		}
@@ -435,13 +454,14 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		// create a new Google Map with the array of places
 		local.gMap = new GoogleMap(
 			places=local.places
-			,mapType = arguments.mapType
-			,displayDirections = arguments.displayDirections
-			,displayTravelMode = arguments.displayTravelMode
-			,start = arguments.start
-			,mapWidth = arguments.mapWidth
-			,mapHeight = arguments.mapHeight
-			,mapZoom = arguments.mapZoom
+			, mapType = arguments.mapType
+			, displayDirections = arguments.displayDirections
+			, displayTravelMode = arguments.displayTravelMode
+			, start = arguments.start
+			, mapWidth = arguments.mapWidth
+			, mapHeight = arguments.mapHeight
+			, mapZoom = arguments.mapZoom
+			, displayCategoryFilter = arguments.displayCategoryFilter
 		);
 
 		return local.gMap.getMap();
@@ -466,20 +486,14 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	) output=false {
 		var local = {};
 		local.places = [];
-
 		local.mapURL = getMapURL(latitude=arguments.latitude, longitude=arguments.longitude);
-		local.detailsURL = $.content('url');
-		if ( len(trim(arguments.start)) ) {
-			local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(arguments.start);
-		}
-		local.isMobile = getIsMobile();
 
 		local.place = new Place(
 			placeName = arguments.name
 			, latitude = arguments.latitude
 			, longitude = arguments.longitude
 			, zIndex = 1
-			, detailsURL = local.detailsURL
+			, detailsURL = local.mapURL
 			, mapURL = local.mapURL
 			, isMobile = local.isMobile
 		);
@@ -488,13 +502,13 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 
 		local.gMap = new GoogleMap(
 			places=local.places
-			,mapType = arguments.mapType
-			,displayDirections = arguments.displayDirections
-			,displayTravelMode = arguments.displayTravelMode
-			,start = arguments.start
-			,mapWidth = arguments.mapWidth
-			,mapHeight = arguments.mapHeight
-			,mapZoom = arguments.mapZoom
+			, mapType = arguments.mapType
+			, displayDirections = arguments.displayDirections
+			, displayTravelMode = arguments.displayTravelMode
+			, start = arguments.start
+			, mapWidth = arguments.mapWidth
+			, mapHeight = arguments.mapHeight
+			, mapZoom = arguments.mapZoom
 		);
 
 		return local.gMap.getMap();
@@ -530,7 +544,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		local.fBean.setNextN(10000); // max locations to display
 		local.fBean.setShowNavOnly(true); // set to false to include content even if it's not in the navigation
 		
-		// If we're on a Folder (formerly Portal): Folder/MuraLocationMap, then check to see if we only want to display children of this Folder...otherwise, we'll include all locations.
+		// If we're on a Folder (formerly Portal): Folder/MuraLocationsMap, then check to see if we only want to display children of this Folder...otherwise, we'll include all locations.
 		if ( 
 			ListFindNoCase('Portal,Folder', local.cBean.getValue('type')) 
 			&& ListFindNoCase('MuraLocation,MuraLocationsMap', local.cBean.getValue('subtype'))
@@ -635,11 +649,12 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	public string function getMapURL(
    		required numeric latitude
    		, required numeric longitude
+   		, string saddr=''
    	) output=false {
     	var mobile = new MobileDetect();
     	var local = {};
 
-    	local.baseURL = 'https://maps.google.com/?q=';
+    	local.baseURL = 'https://maps.google.com/?saddr=#URLEncodedFormat(arguments.saddr)#&daddr=';
     	local.coords = URLEncodedFormat(arguments.latitude & ',' & arguments.longitude);
 
     	if ( mobile.getIsIphone() ) { // iPhone
@@ -652,10 +667,8 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
     		local.lat = arguments.latitude * 100000;
     		local.lng = arguments.longitude * 100000;
     		return 'javascript:blackberry.launch.newMap({"latitude":#local.lat#,"longitude":#local.lng#})';
-    	} else if ( get$().event('muraMobileRequest') ) { // if viewing as mobile on browser
+    	} else { 
     		return local.baseURL & local.coords;
-    	} else {
-	    	return '';
 	    }
     }
 

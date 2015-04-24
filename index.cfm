@@ -3,16 +3,19 @@
 * 
 * This file is part of MuraLocations TM
 *
-* Copyright 2010-2014 Stephen J. Withington, Jr.
+* Copyright 2010-2015 Stephen J. Withington, Jr.
 * Licensed under the Apache License, Version v2.0
 * http://www.apache.org/licenses/LICENSE-2.0
 *
 */
-	include 'plugin/config.cfm';
 </cfscript>
+<style type="text/css">
+	#bodyWrap h3{padding-top:1em;}
+	#bodyWrap ul{padding:0 0.75em;margin:0 0.75em;}
+</style>
 <cfsavecontent variable="body">
 	<cfoutput>
-		<div>
+		<div id="bodyWrap">
 			<h1>#HTMLEditFormat(pluginConfig.getName())#</h1>
 			<p><em>Version: #pluginConfig.getVersion()#<br />
 			Author: <a href="http://stephenwithington.com" target="_blank">Steve Withington</a></em></p>
@@ -50,11 +53,11 @@
 			<p>To use these display objects, go to the 'Layout &amp; Objects' tab &gt; Select 'Plugins' from the 'Available Content Objects' select menu &gt; Select 'MuraLocations' from the list of plugins > Then select a display object and assign it to your desired display region.</p>
 
 			<h2>Designers / Developers</h2>
-			<p>The 'Plugin Display Objects' may also be added directly onto your template or even dropped into a content region using '[mura]' tags.</p>
+			<p>The 'Plugin Display Objects' may also be added directly onto your template or even dropped into a content region using '[m]' tags.</p>
 
 			<h3>Find Locations Form Example Code</h3>
 			<h4>Mura Tag Method</h4>
-			<pre>[mura]$.muraLocations.dspFindLocationsForm()[/mura]</pre>
+			<pre>[m]$.muraLocations.dspFindLocationsForm()[/m]</pre>
 			<h4>CFML Method</h4>
 			<pre>##$.muraLocations.dspFindLocationsForm()##</pre>
 
@@ -62,7 +65,7 @@
 
 			<h3>Locations Map Example Code</h3>
 			<h4>Mura Tag Method</h4>
-			<pre>[mura]$.muraLocations.dspLocationsMap()[/mura]</pre>
+			<pre>[m]$.muraLocations.dspLocationsMap()[/m]</pre>
 			<h4>CFML Method</h4>
 			<pre>##$.muraLocations.dspLocationsMap()##</pre>
 
@@ -84,7 +87,7 @@ string mapZoom='default'</pre>
 			<p>A method has been included with this plugin to quickly and easily display a simple Google Map based on just a location name, it's latitude, and longitude. This method is not tied to any content types in Mura. Whereas the <code>dspLocationsMap()</code> method only displays locations that have been added to Mura as <code>Page/MuraLocation</code>.
 
 			<h4>Mura Tag Method</h4>
-<pre>[mura]$.muraLocations.dspSimpleMap(name='Location Name', latitude=38.58439200000001, longitude=-121.284517)[/mura]</pre>
+<pre>[m]$.muraLocations.dspSimpleMap(name='Location Name', latitude=38.58439200000001, longitude=-121.284517)[/m]</pre>
 
 			<h4>CFML Method</h4>
 			<pre>##$.muraLocations.dspSimpleMap(name='Location Name', latitude=38.58439200000001, longitude=-121.284517)##</pre>
@@ -116,26 +119,19 @@ string mapZoom='default'</pre>
 
 			<h2>Tested With</h2>
 			<ul>
-				<li>Mura CMS Core Version 6.0+</li>
-				<li>Adobe ColdFusion 10.0.4</li>
-				<li>Railo 4.0.2.002</li>
-			</ul>
-
-			<h3>Should Also Work With</h3>
-			<p><em>Minimum Mura CMS Core Version required is 6.0+</em></p>
-			<ul>
-				<li>ColdFusion 9.0.1+</li>
-				<li>Railo 3.3.1+</li>
+				<li>Mura CMS Core Version 6.2+</li>
+				<li>Adobe ColdFusion 11.0.4</li>
+				<li>Lucee 4.5+</li>
 			</ul>
 
 			<h2>Need help?</h2>
-			<p>If you're running into an issue, please let me know at <a href="https://github.com/stevewithington/MuraLocations/issues">https://github.com/stevewithington/MuraLocations/issues</a> and I'll try to address it as soon as I can.</p>
+			<p>If you're running into an issue, please let me know at <a href="https://github.com/stevewithington/#HTMLEditFormat(pluginConfig.getPackage())#/issues">https://github.com/stevewithington/#HTMLEditFormat(pluginConfig.getPackage())#/issues</a> and I'll try to address it as soon as I can.</p>
 	
 			<p>Cheers!<br />
 			<a href="http://stephenwithington.com">Steve Withington</a></p>
 
 			<h2>License</h2>
-			<p>Copyright 2012<cfif Year(Now()) neq 2012>-#Year(Now())#</cfif> Stephen J. Withington, Jr.</p>
+			<p>Copyright 2010-#Year(Now())# Stephen J. Withington, Jr.</p>
 			<p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License. You may obtain a copy of the License in the LICENSE file, or at:</p>
 
 			<blockquote><a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></blockquote>

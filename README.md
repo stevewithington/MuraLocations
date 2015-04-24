@@ -108,16 +108,9 @@ Technically, you could have 'Page / MuraLocation' content nodes scattered throug
 
 ##Tested With
 
-* Mura CMS Core Version 6.0+
-* Adobe ColdFusion 10.0.4
-* Railo 4.0.2.002
-
-###Should Also Work With
-
-_Minimum Mura CMS Core Version required is 6.0+_
-
-* ColdFusion 9.0.1+
-* Railo 3.3.1+
+* Mura CMS Core Version 6.2+
+* Adobe ColdFusion 11.0.4
+* Lucee 4.5
 
 ## Need help?
 
@@ -127,7 +120,7 @@ Cheers!
 [Steve Withington](http://www.stephenwithington.com)
 
 ##License
-Copyright 2010-2014 Stephen J. Withington, Jr.
+Copyright 2010-2015 Stephen J. Withington, Jr.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License. You may obtain a copy of the License in the LICENSE file, or at:
 

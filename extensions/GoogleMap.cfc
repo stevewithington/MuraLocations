@@ -2,14 +2,14 @@
 * 
 * This file is part of MuraLocations TM
 *
-* Copyright 2010-2014 Stephen J. Withington, Jr.
+* Copyright 2010-2015 Stephen J. Withington, Jr.
 * Licensed under the Apache License, Version v2.0
 * http://www.apache.org/licenses/LICENSE-2.0
 *
 */
 component accessors=true output=false {
 
-	property name='places' type='array' hint='an array of places with each one formatted as ["PlaceName","Lat","Lng","ZIndex","Icon","InfoWindow"]';
+	property name='places' type='array' hint='an array of places with each one formatted as an array of structs [{"placename"="PlaceName","lat"="Lat","lng"="Lng","zindex"="ZIndex","icon"="Icon","infowindow"="InfoWindow"}]';
 	property name='displayDirections' type='boolean' default=true;
 	property name='displayTravelMode' type='boolean' default=true;
 	property name='mapHeight' type='numeric' default=400;
@@ -18,11 +18,12 @@ component accessors=true output=false {
 	property name='mapZoom' type='string' default='default';
 	property name='start' type='string' default='';
 	property name='map';
+	property name='displayCategoryFilter' type='boolean' default=true;
 
 	/**
 	* init()
 	* Constructor
-	* @places each place should be formatted as: ["PlaceName","Lat","Lng","ZIndex","Icon","InfoWindow"]
+	* @places each place should be formatted as an array of structs: [{'placename'="PlaceName",'lat'="Lat",'lng'="Lng",'zindex'="ZIndex",'icon'="Icon",'infowindow'="InfoWindow"}]
 	*/
 	public GoogleMap function init(
 		required array places
@@ -33,6 +34,7 @@ component accessors=true output=false {
 		, numeric mapWidth=0
 		, string mapZoom='default'
 		, string start=''
+		, boolean displayCategoryFilter=true
 	) output=false {
 		setPlaces(arguments.places);
 		setDisplayDirections(arguments.displayDirections);
@@ -42,6 +44,7 @@ component accessors=true output=false {
 		setMapWidth(arguments.mapWidth);
 		setMapZoom(arguments.mapZoom);
 		setStart(arguments.start);
+		setDisplayCategoryFilter(arguments.displayCategoryFilter);
 		setMap(
 			places=getPlaces()
 			, displayDirections=getDisplayDirections()
@@ -51,6 +54,7 @@ component accessors=true output=false {
 			, mapWidth=getMapWidth()
 			, mapZoom=getMapZoom()
 			, start=getStart()
+			, displayCategoryFilter=getDisplayCategoryFilter()
 		);
 		return this;
 	}
@@ -68,6 +72,7 @@ component accessors=true output=false {
 		, numeric mapWidth=0
 		, string mapZoom='default'
 		, string start=''
+		, boolean displayCategoryFilter=true
 	) output=false {
 		var local = {};
 		local.str = '';
