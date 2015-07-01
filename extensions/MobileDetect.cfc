@@ -51,14 +51,4 @@ component accessors=true output=false {
 		return REFindNoCase('blackberry',CGI.HTTP_USER_AGENT);
 	}
 
-	public any function getProperties() output=false {
-		var local = {};
-		local.properties = {};
-		local.data = getMetaData(this).properties;
-		for ( local.i=1; local.i <= ArrayLen(local.data); local.i++ ) {
-			local.properties[local.data[local.i].name] = Evaluate('get#local.data[local.i].name#()');
-		};
-		return local.properties;
-	}
-
 }

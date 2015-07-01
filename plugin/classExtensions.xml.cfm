@@ -122,6 +122,19 @@
 					optionLableList="" />
 
 				<attribute 
+					name="locationURL"
+					label="External URL (include 'http://')"
+					hint="If this location has an external URL, enter it here including 'http://'"
+					type="TextBox"
+					defaultValue=""
+					required="false"
+					validation=""
+					regex=""
+					message=""
+					optionList=""
+					optionLableList="" />
+
+				<attribute 
 					name="latitude"
 					label="Latitude"
 					hint="The Latitude of the location."
@@ -173,7 +186,7 @@
 					optionList=""
 					optionLabelList="" />
 
-				<!--- <attribute 
+				<attribute 
 					name="mapZoom"
 					label="Default Zoom"
 					hint="You can override the default behaviour of auto-fit the location here."
@@ -184,7 +197,7 @@
 					regex=""
 					message=""
 					optionList="default^0^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18"
-					optionLabelList="Auto Fit To Viewport^0 (Fully Zoomed Out-Earth Map)^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18 (Fully Zoomed In)" /> --->
+					optionLabelList="Auto Fit To Viewport^0 (Fully Zoomed Out-Earth Map)^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18 (Fully Zoomed In)" />
 
 				<attribute 
 					name="mapType"
@@ -211,6 +224,58 @@
 					message=""
 					optionList=""
 					optionLableList="" />
+
+				<attribute 
+					name="displayCategoryFilter"
+					label="Display Category Filter"
+					hint="If locations are categorized, should the map filter display?"
+					type="RadioGroup"
+					defaultValue="true"
+					required="false"
+					validation="None"
+					regex=""
+					message=""
+					optionList="false^true"
+					optionLabelList="No^Yes" />
+
+				<attribute 
+					name="displayDirections"
+					label="Display Directions"
+					hint="Should users be able to see directions to the location(s)?"
+					type="RadioGroup"
+					defaultValue="true"
+					required="false"
+					validation="None"
+					regex=""
+					message=""
+					optionList="false^true"
+					optionLabelList="No^Yes" />
+
+				<attribute 
+					name="displayTravelMode"
+					label="Display Travel Mode Options"
+					hint="Should the various travel mode options be displayed when showing directions (e.g. Driving, Walking or Bicycling)?"
+					type="RadioGroup"
+					defaultValue="true"
+					required="false"
+					validation="None"
+					regex=""
+					message=""
+					optionList="false^true"
+					optionLabelList="No^Yes" />
+
+				<attribute 
+					name="displayOnAllLocationsMap"
+					label="Show on 'All Locations Map' Display Object?"
+					hint="Should this location appear on the 'Locations Map' display object? NOTE: If this location is a child of a Folder/MuraLocation, then this location WILL appear on the Folder's map IF the 'Display' setting on the Basic Tab is set to Yes."
+					type="RadioGroup"
+					defaultValue="true"
+					required="false"
+					validation="None"
+					regex=""
+					message=""
+					optionList="false^true"
+					optionLabelList="No^Yes" />
 			</attributeset>
 		</extension>
 
@@ -243,7 +308,7 @@
 					optionList=""
 					optionLabelList="" />
 
-				<!--- <attribute
+				<attribute
 					name="mapZoom"
 					label="Default Zoom"
 					hint="You can override the default behaviour of auto-fit all locations here."
@@ -254,7 +319,7 @@
 					regex=""
 					message=""
 					optionList="default^0^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18"
-					optionLabelList="Auto Fit All Locations To Viewport^0 (Fully Zoomed Out-Earth Map)^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18 (Fully Zoomed In)" /> --->
+					optionLabelList="Auto Fit All Locations To Viewport^0 (Fully Zoomed Out-Earth Map)^1^2^3^4^5^6^7^8^9^10^11^12^13^14^15^16^17^18 (Fully Zoomed In)" />
 
 				<attribute
 					name="mapType"
@@ -268,6 +333,58 @@
 					message=""
 					optionList="ROADMAP^SATELLITE^HYBRID^TERRAIN"
 					optionLabelList="Roadmap^Satellite^Hybrid^Terrain" />
+
+				<attribute 
+					name="displayCategoryFilter"
+					label="Display Category Filter"
+					hint="If locations are categorized, should the map filter display?"
+					type="RadioGroup"
+					defaultValue="true"
+					required="false"
+					validation="None"
+					regex=""
+					message=""
+					optionList="false^true"
+					optionLabelList="No^Yes" />
+
+				<attribute
+					name="displayDirections"
+					label="Display Directions"
+					hint="Should users be able to see directions to the location(s)?"
+					type="RadioGroup"
+					defaultValue="true"
+					required="false"
+					validation="None"
+					regex=""
+					message=""
+					optionList="false^true"
+					optionLabelList="No^Yes" />
+
+				<attribute
+					name="displayTravelMode"
+					label="Display Travel Mode Options"
+					hint="Should the various travel mode options be displayed when showing directions (e.g. Driving, Walking or Bicycling)?"
+					type="RadioGroup"
+					defaultValue="true"
+					required="false"
+					validation="None"
+					regex=""
+					message=""
+					optionList="false^true"
+					optionLabelList="No^Yes" />
+
+				<attribute 
+					name="showChildrenOnly"
+					label="Show only children of this Folder?"
+					hint="Should this map ONLY show MuraLocations that are direct children of this Folder?"
+					type="RadioGroup"
+					defaultValue="false"
+					required="false"
+					validation="None"
+					regex=""
+					message=""
+					optionList="false^true"
+					optionLabelList="No^Yes" />
 			</attributeset>
 		</extension>
 	</extensions>

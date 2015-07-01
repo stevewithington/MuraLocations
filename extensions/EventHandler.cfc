@@ -48,59 +48,81 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	public any function onPageMuraLocationBodyRender(required struct $) output=false {
 		var local = {};
 		set$(arguments.$);
+		local.tp = get$().initTracePoint('*** plugins.MuraLocations.cfc.EventHandler.onPageMuraLocationBodyRender() ***');
+
 		local.isMobile = getIsMobile();
-		local.image = get$().getURLForImage(
-			fileid = get$().content('fileid')
-			, size = 'small'
-			, complete = true
-		);
+		local.objectKey = 'MURA-LOCATION-MAP-' & $.content('contentid');
+		if (local.isMobile) {
+			local.objectKey &= '-mobile';
+		}
+		local.tp = $.initTracePoint('*** plugins.MuraLocations.cfc.EventHandler.onFolderMuraLocationsMapBodyRender: "#local.objectKey#"  ***');
 
-		// build the map, etc.
-		local.places = [];
-		local.rsCategories = get$().content().getCategoriesQuery();
-		local.place = new Place(
-			placeName = get$().content('title')
-			, latitude = get$().content('latitude')
-			, longitude = get$().content('longitude')
-			, streetAddress = get$().content('streetAddress')
-			, addressLocality = get$().content('addressLocality')
-			, addressRegion = get$().content('addressRegion')
-			, postalCode = get$().content('postalCode')
-			, addressCountry = get$().content('addressCountry')
-			, locationNotes = get$().content('locationNotes')
-			, detailsURL = get$().content('url')
-			, mapURL = getMapURL(latitude=get$().content('latitude'), longitude=get$().content('longitude'))
-			, locationTelephone = get$().content('locationTelephone')
-			, locationFaxNumber = get$().content('locationFaxNumber')
-			, locationEmail = get$().content('locationEmail')
-			, locationImage = local.image
-			, infoWindow = get$().content('mapInfoWindow')
-			, isMobile = local.isMobile
-			, categories = ListToArray(ValueList(local.rsCategories.name))
-		);
-		
-		ArrayAppend(local.places, local.place.gMapPoint());
+		local.response = getCachedObject(local.objectKey);
 
-		local.gMap = new GoogleMap(
-			places=local.places
-			, mapType = get$().content('mapType')
-			, start = get$().event('start')
-			, mapWidth = get$().content('mapWidth')
-			, mapHeight = get$().content('mapHeight')
-			//, mapZoom = get$().content('mapZoom')
-		);
-		
-		// if you don't need anything fancy, just use this:
-		// return local.body & local.gMap.getMap();
+		if ( !Len(local.response) ) {
 
-		local.outerWrapperClass = local.isMobile ? 'muraLocationOuterWrapperMobile' : 'muraLocationOuterWrapper';
+			local.image = get$().getURLForImage(
+				fileid = get$().content('fileid')
+				, size = 'small'
+				, complete = true
+			);
 
-		local.$ = get$();
-		savecontent variable='local.str' {
-			include 'includes/muraLocationBody.cfm';
-		}; // @END local.str
+			// build the map, etc.
+			local.places = [];
+			local.rsCategories = get$().content().getCategoriesQuery();
+			local.place = new Place(
+				placeName = get$().content('title')
+				, latitude = get$().content('latitude')
+				, longitude = get$().content('longitude')
+				, streetAddress = get$().content('streetAddress')
+				, addressLocality = get$().content('addressLocality')
+				, addressRegion = get$().content('addressRegion')
+				, postalCode = get$().content('postalCode')
+				, addressCountry = get$().content('addressCountry')
+				, locationNotes = get$().content('locationNotes')
+				, detailsURL = get$().content('url')
+				, mapURL = getMapURL(latitude=get$().content('latitude'), longitude=get$().content('longitude'))
+				, locationTelephone = get$().content('locationTelephone')
+				, locationFaxNumber = get$().content('locationFaxNumber')
+				, locationEmail = get$().content('locationEmail')
+				, locationImage = local.image
+				, infoWindow = get$().content('mapInfoWindow')
+				, isMobile = local.isMobile
+				, categories = ListToArray(ValueList(local.rsCategories.name))
+			);
+			
+			ArrayAppend(local.places, local.place.gMapPoint());
 
-		return local.str;
+			local.displayCategoryFilter = YesNoFormat(get$().content('displayCategoryFilter'));
+			local.mapZoom = get$().content('mapZoom') == 'default' || !Len(get$().content('mapZoom'))
+				? 15
+				: get$().content('mapZoom');
+
+			local.gMap = new GoogleMap(
+				places=local.places
+				, mapType = get$().content('mapType')
+				, start = get$().event('start')
+				, mapWidth = get$().content('mapWidth')
+				, mapHeight = get$().content('mapHeight')
+				, mapZoom = local.mapZoom
+				, displayCategoryFilter = local.displayCategoryFilter
+			);
+			
+			// if you don't need anything fancy, just use this:
+			// return local.body & local.gMap.getMap();
+
+			local.outerWrapperClass = local.isMobile ? 'muraLocationOuterWrapperMobile' : 'muraLocationOuterWrapper';
+
+			local.$ = get$();
+			savecontent variable='local.response' {
+				include 'includes/muraLocationBody.cfm';
+			};
+
+			setCachedObject(local.objectKey, local.response);
+		}
+
+		get$().commitTracePoint(local.tp);
+		return local.response;
 	}
 
 	/**
@@ -195,21 +217,23 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		local.response = getCachedObject(local.objectKey);
 
 		if ( !Len(local.response) ) {
-			local.map = dspLocationsMap(
+			local.displayCategoryFilter = YesNoFormat(get$().content('displayCategoryFilter'));
+
+			local.response = dspLocationsMap(
 				mapType = get$().content('mapType')
 				, start = get$().event('start')
 				, mapWidth = get$().content('mapWidth')
 				, mapHeight = get$().content('mapHeight')
-				//, mapZoom = get$().content('mapZoom')
-				, displayCategoryFilter = true
+				, mapZoom = get$().content('mapZoom')
+				, displayCategoryFilter = local.displayCategoryFilter
 			);
 
 			setCachedObject(local.objectKey, local.response);
 		}
 
-		$.commitTracePoint(local.tp);
+		get$().commitTracePoint(local.tp);
 
-		return local.body & local.map;
+		return local.body & local.response;
 	}
 
 	// Backwards compatibility
@@ -250,9 +274,13 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		if ( StructKeyExists(arguments, '$') ) {
 			set$(arguments.$);
 		}
+
+		local.tp = get$().initTracePoint('*** plugins.MuraLocations.cfc.EventHandler.dspFindLocationsForm() ***');
+
 		if (!IsBoolean(get$().event('findLocationRequestSubmitted'))){
 			get$().event('findLocationRequestSubmitted',false);
 		}
+
 		if (get$().event('findLocationRequestSubmitted')){
 			get$().announceEvent('onFindLocations');
 		}
@@ -260,6 +288,8 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		savecontent variable='local.str' {
 			include 'includes/findLocationsForm.cfm';
 		} 
+
+		get$().commitTracePoint(local.tp);
 		return local.str;
 	}
 	
@@ -269,6 +299,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	public any function dspClosestLocations(required struct $) output=false {
 		var local = {};
 		set$($);
+		local.tp = get$().initTracePoint('*** plugins.MuraLocations.cfc.EventHandler.dspClosestLocations() ***');
 		local.microDataFormat = getIsMobile() ? 'li' : 'div';
 		local.result = get$().event('geoResponse').results[1];
 		local.currentAddress = local.result.formatted_address;
@@ -351,6 +382,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 
 		}
 
+		get$().commitTracePoint(local.tp);
 		return local.str;
 	}
 	
@@ -371,6 +403,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		, boolean displayCategoryFilter=true
 	) output=false {
 		var local = {};
+		local.tp = get$().initTracePoint('*** plugins.MuraLocations.cfc.EventHandler.dspLocationsMap() ***');
 
 		// if being used as a display object, we need to set $ locally so we can use get$() in other methods
 		if ( StructKeyExists(arguments, '$') ) {
@@ -477,6 +510,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, displayCategoryFilter = arguments.displayCategoryFilter
 		);
 
+		get$().commitTracePoint(local.tp);
 		return local.gMap.getMap();
 	}
 
@@ -487,8 +521,8 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	*/
 	public any function dspSimpleMap(
 		string name='Blue River Interactive Group, Inc.'
-		, numeric latitude=38.58439200000001
-		, numeric longitude=-121.284517
+		, numeric latitude=38.5749195
+		, numeric longitude=-121.4786411
 		, string start=''
 		, numeric mapHeight=400
 		, string mapType='ROADMAP'
@@ -497,6 +531,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		, string mapZoom='default'
 	) output=false {
 		var local = {};
+		local.tp = get$().initTracePoint('*** plugins.MuraLocations.cfc.EventHandler.dspSimpleMap: "#arguments.name#" ***');
 		local.places = [];
 		local.mapURL = getMapURL(latitude=arguments.latitude, longitude=arguments.longitude);
 		local.detailsURL = $.content('url');
@@ -514,7 +549,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, detailsURL = local.detailsURL
 			, mapURL = local.mapURL
 			, infoWindow = arguments.infoWindow
-			, isMobile = local.isMobile
+			, isMobile = getIsMobile()
 		);
 
 		ArrayAppend(local.places, local.place.gMapPoint());
@@ -528,9 +563,10 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, mapZoom = arguments.mapZoom
 		);
 
+		get$().commitTracePoint(local.tp);
 		return local.gMap.getMap();
 	}
-    
+		
 	/**
 	* getMuraLocationsBean()
 	* @contentid filter on specific section of the site
@@ -622,6 +658,8 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		var local = {};
 		var rs = QueryNew('contentid,latitude,longitude,distance');
 
+		local.tp = get$().initTracePoint('*** plugins.MuraLocations.cfc.EventHandler.getClosestLocations() ***');
+
 		local.geo = new Geo();
 		local.currentLatLng = local.geo.getLatLng(q=arguments.currentLocation);
 		local.it = getMuraLocationsBean().getIterator();
@@ -655,7 +693,8 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		q.setMaxRows(arguments.maxLocations);
 		q.setSQL('SELECT * FROM rs ORDER BY distance ASC');
 		rs = q.execute().getResult();
-		
+
+		get$().commitTracePoint(local.tp);		
 		return local.rs;
 	}
 
@@ -670,35 +709,40 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		get$().loadJSLib();
 		variables.pluginConfig.addToHTMLFootQueue('scripts/inc.cfm');
 	}
-    
+		
 	/**
 	* getMapURL()
 	*/
 	public string function getMapURL(
-   		required numeric latitude
-   		, required numeric longitude
-   		, string saddr=''
-   	) output=false {
-    	var mobile = new MobileDetect();
-    	var local = {};
+		required numeric latitude
+		, required numeric longitude
+		, string saddr=''
+	) output=false {
+		var mobile = new MobileDetect();
+		var local = {};
 
-    	local.baseURL = 'https://maps.google.com/?saddr=#URLEncodedFormat(arguments.saddr)#&daddr=';
-    	local.coords = URLEncodedFormat(arguments.latitude & ',' & arguments.longitude);
+		local.tp = get$().initTracePoint('*** plugins.MuraLocations.cfc.EventHandler.getMapURL(#arguments.latitude#, #arguments.longitude#) ***');
 
-    	if ( mobile.getIsIphone() ) { // iPhone
-    		return 'https://maps.google.com/?saddr=Current%20Location&daddr=' & local.coords;
-    	} else if ( mobile.getIsAndroid() ) { // android
-    		return 'geo:' & local.coords;
-    	} else if ( mobile.getIsWinPhone7() || mobile.getIsIEMobile() ) { // win
-    		return 'maps:' & local.coords;
-    	} else if ( mobile.getIsBlackberry() ) { // blackberry
-    		local.lat = arguments.latitude * 100000;
-    		local.lng = arguments.longitude * 100000;
-    		return 'javascript:blackberry.launch.newMap({"latitude":#local.lat#,"longitude":#local.lng#})';
-    	} else { 
-    		return local.baseURL & local.coords;
-	    }
-    }
+		local.baseURL = 'https://maps.google.com/?saddr=#URLEncodedFormat(arguments.saddr)#&daddr=';
+		local.coords = URLEncodedFormat(arguments.latitude & ',' & arguments.longitude);
+
+		if ( mobile.getIsIphone() ) { // iPhone
+			local.mapURL = 'https://maps.google.com/?saddr=Current%20Location&daddr=' & local.coords;
+		} else if ( mobile.getIsAndroid() ) { // android
+			local.mapURL = 'geo:' & local.coords;
+		} else if ( mobile.getIsWinPhone7() || mobile.getIsIEMobile() ) { // win
+			local.mapURL = 'maps:' & local.coords;
+		} else if ( mobile.getIsBlackberry() ) { // blackberry
+			local.lat = arguments.latitude * 100000;
+			local.lng = arguments.longitude * 100000;
+			local.mapURL = 'javascript:blackberry.launch.newMap({"latitude":#local.lat#,"longitude":#local.lng#})';
+		} else { 
+			local.mapURL = local.baseURL & local.coords;
+		}
+
+		get$().commitTracePoint(local.tp);
+		return local.mapURL;
+	}
 
 	// Custom Plugin Application Cache  ----------------------------------------------------------
 

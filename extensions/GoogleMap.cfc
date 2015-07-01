@@ -77,9 +77,9 @@ component accessors=true output=false {
 		var local = {};
 		local.str = '';
 		local.thisID = Right(LCase(REReplace(CreateUUID(), '-', '', 'all')),11);
-		local.mapCanvasID = 'gmapCanvas_' & thisID;
-		local.mapDirectionsID = 'gmapDirections_' & thisID;
-		local.formID = 'frmDirections_' & thisID;
+		local.mapCanvasID = 'gmap-canvas-' & thisID;
+		local.mapDirectionsID = 'gmap-directions-' & thisID;
+		local.formID = 'frm-directions-' & thisID;
 		arguments.mapWidth = Val(arguments.mapWidth);
 		arguments.mapHeight = Val(arguments.mapHeight);
 
@@ -126,20 +126,6 @@ component accessors=true output=false {
 			include 'includes/gmap-css-scripts.cfm';
 		};
 		variables.map = local.str;
-	}
-
-	/**
-	* getProperties()
-	* Metadata property inspector
-	*/
-	public any function getProperties() output=false {
-		var local = {};
-		local.properties = {};
-		local.data = getMetaData(this).properties;
-		for ( local.i=1; local.i <= ArrayLen(local.data); local.i++ ) {
-			local.properties[local.data[local.i].name] = Evaluate('get#local.data[local.i].name#()');
-		};
-		return local.properties;
 	}
 
 }

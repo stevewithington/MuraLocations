@@ -183,18 +183,4 @@ component accessors=true output=false {
 	public any function getIsMobile() output=false { return StructKeyExists(variables, 'isMobile') ?variables.isMobile : false; }
 	public any function getCategories() output=false { return variables.categories }
 
-	/**
-	* getProperties()
-	* Metadata property inspector
-	*/
-	public any function getProperties() output=false {
-		var local = {};
-		local.properties = {};
-		local.data = getMetaData(this).properties;
-		for ( local.i=1; local.i <= ArrayLen(local.data); local.i++ ) {
-			local.properties[local.data[local.i].name] = Evaluate('get#local.data[local.i].name#()');
-		};
-		return local.properties;
-	}
-
 }
