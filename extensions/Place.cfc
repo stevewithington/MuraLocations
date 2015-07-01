@@ -123,6 +123,8 @@ component accessors=true output=false {
 			, 'icon'=getIcon()
 			, 'infowindow'=getInfoWindow()
 			, 'categories'=getCategories()
+			, 'detailsurl'=getDetailsURL()
+			, 'mapurl'=getMapURL()
 		}
 	}
 	

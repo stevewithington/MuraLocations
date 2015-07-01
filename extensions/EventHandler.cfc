@@ -68,7 +68,8 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, postalCode = get$().content('postalCode')
 			, addressCountry = get$().content('addressCountry')
 			, locationNotes = get$().content('locationNotes')
-			, detailsURL = getMapURL(latitude=get$().content('latitude'), longitude=get$().content('longitude'))
+			, detailsURL = get$().content('url')
+			, mapURL = getMapURL(latitude=get$().content('latitude'), longitude=get$().content('longitude'))
 			, locationTelephone = get$().content('locationTelephone')
 			, locationFaxNumber = get$().content('locationFaxNumber')
 			, locationEmail = get$().content('locationEmail')
@@ -180,20 +181,35 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 	public any function onFolderMuraLocationsMapBodyRender(required struct $) output=false {
 		var local = {};
 		set$(arguments.$);
+
 		local.body = get$().renderEditableAttribute(
 			attribute='body'
 			, type='HTMLEditor'
 			, label='Content'
 			, enableMuraTag=true
 		);
-		return local.body & dspLocationsMap(
-			mapType = get$().content('mapType')
-			, start = get$().event('start')
-			, mapWidth = get$().content('mapWidth')
-			, mapHeight = get$().content('mapHeight')
-			//, mapZoom = get$().content('mapZoom')
-			, displayCategoryFilter = true
-		);
+	
+		local.objectKey = 'MURA-LOCATION-MAP-' & $.content('contentid');
+		local.tp = $.initTracePoint('*** plugins.MuraLocations.cfc.EventHandler.onFolderMuraLocationsMapBodyRender: "#local.objectKey#"  ***');
+
+		local.response = getCachedObject(local.objectKey);
+
+		if ( !Len(local.response) ) {
+			local.map = dspLocationsMap(
+				mapType = get$().content('mapType')
+				, start = get$().event('start')
+				, mapWidth = get$().content('mapWidth')
+				, mapHeight = get$().content('mapHeight')
+				//, mapZoom = get$().content('mapZoom')
+				, displayCategoryFilter = true
+			);
+
+			setCachedObject(local.objectKey, local.response);
+		}
+
+		$.commitTracePoint(local.tp);
+
+		return local.body & local.map;
 	}
 
 	// Backwards compatibility
@@ -286,7 +302,8 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				}
 
 				local.item = get$().getBean('content').loadBy(contentid=local.rs.contentid[local.i]);
-				local.detailsURL = getMap(latitude=local.item.getValue('latitude'), longitude=local.item.getValue('longitude'));
+				// local.detailsURL = getMap(latitude=local.item.getValue('latitude'), longitude=local.item.getValue('longitude'));
+				local.detailsURL = get$().createHREF(filename=local.item.getValue('filename'));
 				local.image = get$().getURLForImage(
 					fileid = local.item.getValue('fileid')
 					, size = 'small'
@@ -379,6 +396,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			// START : Using arguments.locations
 				for ( var location in arguments.locations ) {
 					if ( IsStruct(location) && StructKeyExists(location, 'placeName') && StructKeyExists(location, 'latitude') && StructKeyExists(location, 'longitude') ) {
+						// if viewing via mobile device that may have mapping capabilities, try to provide a device-native link to view the map
 						location.mapURL = getMapURL(latitude=location.latitude, longitude=location.longitude);
 						location.isMobile = local.isMobile;
 						local.place = new Place(argumentCollection=location);
@@ -407,7 +425,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 						local.lng = local.item.getValue('longitude');
 						// if viewing via mobile device that may have mapping capabilities, try to provide a device-native link to view the map
 						local.mapURL = getMapURL(latitude=local.lat, longitude=local.lng);
-
+						local.detailsURL = local.item.getValue('url');
 						local.image = get$().getURLForImage(
 							fileid = local.item.getValue('fileid')
 							, size = 'small'
@@ -416,6 +434,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 
 						if ( len(trim(arguments.start)) ) {
 							local.mapURL = getMapURL(latitude=local.item.getValue('latitude'), longitude=local.item.getValue('longitude'), saddr=get$().event('start'));
+							local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(arguments.start);
 						}
 
 						local.rsCategories = local.item.getCategoriesQuery();
@@ -434,7 +453,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 							, locationEmail = local.item.getValue('locationEmail')
 							, locationImage = local.image
 							, zIndex = local.it.currentRow()
-							, detailsURL = local.mapURL
+							, detailsURL = local.detailsURL
 							, mapURL = local.mapURL
 							, infoWindow = local.item.getValue('mapInfoWindow')
 							, isMobile = local.isMobile
@@ -480,13 +499,19 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		var local = {};
 		local.places = [];
 		local.mapURL = getMapURL(latitude=arguments.latitude, longitude=arguments.longitude);
+		local.detailsURL = $.content('url');
+
+		if ( len(trim(arguments.start)) ) {
+			local.mapURL = getMapURL(latitude=local.item.getValue('latitude'), longitude=local.item.getValue('longitude'), saddr=get$().event('start'));
+			local.detailsURL = local.detailsURL & '?start=' & URLEncodedFormat(arguments.start);
+		}
 
 		local.place = new Place(
 			placeName = arguments.name
 			, latitude = arguments.latitude
 			, longitude = arguments.longitude
 			, zIndex = 1
-			, detailsURL = local.mapURL
+			, detailsURL = local.detailsURL
 			, mapURL = local.mapURL
 			, infoWindow = arguments.infoWindow
 			, isMobile = local.isMobile
@@ -521,53 +546,65 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			? arguments.contentid 
 			: get$().content('contentid');
 
-		local.args = IsValid('uuid', local.contentid) 
-			? { contentid=local.contentid }
-			: { filename=local.contentid };
+		local.objectKey = 'MURA-LOCATIONS-BEAN-' & local.contentid;
+		local.tp = $.initTracePoint('*** plugins.MuraLocations.cfc.EventHandler.getMuraLocationsBean: "#local.objectKey#" ***');
 
-		local.cBean = get$().getBean('content').loadBy(argumentCollection=local.args);
+		local.fBean = getCachedObject(local.objectKey);
 
-		// create a dynamic feed of all Page/MuraLocation subtypes
-		local.fBean = get$().getBean('feed');
-		local.fBean.setName('');
-		local.fBean.setSortBy('title');
-		local.fBean.setSortDirection('asc');
-		local.fBean.setMaxItems(0); // 0 = unlimited
-		local.fBean.setNextN(10000); // max locations to display
-		local.fBean.setShowNavOnly(true); // set to false to include content even if it's not in the navigation
-		
-		// If we're on a Folder (formerly Portal): Folder/MuraLocationsMap, then check to see if we only want to display children of this Folder...otherwise, we'll include all locations.
-		if ( 
-			ListFindNoCase('Portal,Folder', local.cBean.getValue('type')) 
-			&& ListFindNoCase('MuraLocation,MuraLocationsMap', local.cBean.getValue('subtype'))
-		) {
+		if ( IsSimpleValue(local.fBean) ) {
+
+			local.args = IsValid('uuid', local.contentid) 
+				? { contentid=local.contentid }
+				: { filename=local.contentid };
+
+			local.cBean = get$().getBean('content').loadBy(argumentCollection=local.args);
+
+			// create a dynamic feed of all Page/MuraLocation subtypes
+			local.fBean = get$().getBean('feed')
+				.setSortBy('title')
+				.setSortDirection('asc')
+				.setMaxItems(0)
+				.setNextN(10000)
+				.setShowNavOnly(1); // set to 0 to include content even if it's not in the navigation
+			
+			// If we're on a Folder (formerly Portal): Folder/MuraLocationsMap, then check to see if we only want to display children of this Folder...otherwise, we'll include all locations.
+			if ( 
+				ListFindNoCase('Portal,Folder', local.cBean.getValue('type')) 
+				&& ListFindNoCase('MuraLocation,MuraLocationsMap', local.cBean.getValue('subtype'))
+			) {
+				local.fBean.addParam(
+					relationship='AND'
+					, field='tcontent.parentid'
+					, condition='EQ'
+					, criteria=local.cBean.getValue('contentid')
+				);
+			} else if ( Len(arguments.contentid) ) {
+				local.fBean.addParam(
+					relationship='AND'
+					, field='tcontent.path'
+					, condition='CONTAINS'
+					, criteria=local.cBean.getValue('contentid')
+				);
+			}
+
 			local.fBean.addParam(
 				relationship='AND'
-				, field='tcontent.parentid'
-				, condition='EQ'
-				, criteria=local.cBean.getValue('contentid')
+				,field='tcontent.Type'
+				,criteria='Page'
+				,dataType='varchar'
 			);
-		} else if ( Len(arguments.contentid) ) {
 			local.fBean.addParam(
 				relationship='AND'
-				, field='tcontent.path'
-				, condition='CONTAINS'
-				, criteria=local.cBean.getValue('contentid')
+				,field='tcontent.SubType'
+				,criteria='MuraLocation'
+				,dataType='varchar'
 			);
+
+			setCachedObject(local.objectKey, local.fBean);
+
 		}
 
-		local.fBean.addParam(
-			relationship='AND'
-			,field='tcontent.Type'
-			,criteria='Page'
-			,dataType='varchar'
-		);
-		local.fBean.addParam(
-			relationship='AND'
-			,field='tcontent.SubType'
-			,criteria='MuraLocation'
-			,dataType='varchar'
-		);
+		$.commitTracePoint(local.tp);
 
 		return local.fBean;
 	}
@@ -662,5 +699,55 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
     		return local.baseURL & local.coords;
 	    }
     }
+
+	// Custom Plugin Application Cache  ----------------------------------------------------------
+
+		private any function getCachedObject(required string objectKey) {
+			var obj = '';
+			var cache = getApplicationCache();
+			if ( StructKeyExists(cache, 'objects') && StructKeyExists(cache.objects, arguments.objectKey) ) {
+				obj = cache.objects[arguments.objectKey];
+			}
+			return obj;
+		}
+
+		private void function setCachedObject(required string objectKey, any objectValue='') {
+			lock scope='application' type='exclusive' timeout=10 {
+				application[variables.pluginConfig.getValue('packageName')].objects[arguments.objectKey] = arguments.objectValue;
+			};
+		}
+
+		private boolean function isCacheExpired() {
+			var p = variables.pluginConfig.getValue('packageName');
+			return !StructKeyExists(application, p) 
+					|| DateCompare(now(), application[p].expires, 's') == 1 
+					|| DateCompare(application.appInitializedTime, application[p].created, 's') == 1
+				? true : false;
+		}
+
+		private any function getApplicationCache() {
+			var local = {};
+			if ( isCacheExpired() ) {
+				setApplicationCache();
+			}
+			lock scope='application' type='readonly' timeout=10 {
+				local.cache = application[variables.pluginConfig.getValue('packageName')];
+			};
+			return local.cache;
+		}
+
+		private void function setApplicationCache() {
+			var p = variables.pluginConfig.getValue('packageName');
+			lock scope='application' type='exclusive' timeout=10 {
+				StructDelete(application, p);
+				application[p] = {
+					created = Now()
+					, expires = DateAdd('h', 1, Now())
+					, applicationid = Hash(CreateUUID())
+					, objects = {}
+				};
+			};
+		}
+
 
 }

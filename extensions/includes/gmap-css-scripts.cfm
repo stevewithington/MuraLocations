@@ -11,15 +11,15 @@
 </cfscript></cfsilent>
 <cfoutput>
 	<style type="text/css">
+		h4.gmap-header-title { margin:1em 0 0 0;}
+
 		/* categories */
-		.category-filters { width: auto; float:right; }
-		.category-filters .category-filter-wrapper { width: auto; float:left; padding: 0.5em 0 0.5em 0.5em; margin: 0.5em 0 0.5em 0.5em; }
-		.category-filters .category-filter-wrapper label.category-filter-label {}
-		.category-filters .category-filter-wrapper label.category-filter-label input.category-filter-option {}
+		.gmap-category-filters { clear:both; display:block; }
+		.gmap-category-filters .gmap-category-filter-wrapper { width: auto; float:left; padding: 0.5em 0.5em 0.5em 0em; margin: 0.5em 0.5em 0.5em 0em; }
 
 		/* gmap */
-		.gmap-wrapper .gmap-canvas .marker { visibility: hidden; }
-		.gmap-wrapper .gmap-canvas { width: #local.mapWidth#; height: #local.mapHeight# !important; }
+		.gmap-wrapper .gmap-canvas .gmap-marker { visibility: hidden; }
+		.gmap-wrapper .gmap-canvas { clear:both; display:block; width: #local.mapWidth#; height: #local.mapHeight# !important; }
 
 		/* Bootstrap + GMap's infoWindow issue - https://github.com/twitter/bootstrap/issues/2410 */
 		img[src*="gstatic.com/"], img[src*="googleapis.com/"] { max-width: 99999px; }
@@ -63,12 +63,20 @@
 
 		jQuery(document).ready(function($) {
 
+			var infoWindow = new google.maps.InfoWindow();
+
 			var render_map = function ($el) {
-				var $markers = $el.find('.marker');
+				var $markers = $el.find('.gmap-marker');
 				var args = {
 						center: new google.maps.LatLng(0, 0)
+						, minZoom: 2
 						, backgroundColor: '##ffffff'
 						, mapTypeId: google.maps.MapTypeId.#UCase(arguments.mapType)#
+						, scrollwheel: true
+						, navigationControl: true
+						, mapTypeControl: false
+						, scaleControl: true
+						, draggable: true
 				};
 
 				// Create map	        	
@@ -88,7 +96,6 @@
 			}
 			
 			var add_marker = function ($marker, map) {
-				var infoWindow = new google.maps.InfoWindow();
 				var latlng = new google.maps.LatLng($marker.attr('data-lat'), $marker.attr('data-lng'));
 				var icon = null;
 
@@ -135,10 +142,12 @@
 					map = render_map($(this));
 			});
 
-			$('input.category-filter-option').on('click', function () {
+			$('input.gmap-category-filter-option').on('click', function () {
 				var categories = [];
 
-				$('input.category-filter-option:checked').each(function() {
+				$(this).parent().toggleClass('gmap-category-highlight');
+
+				$('input.gmap-category-filter-option:checked').each(function() {
 					categories.push($(this).val());
 				});
 	

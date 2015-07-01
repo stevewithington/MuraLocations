@@ -11,5 +11,4 @@
 </cfscript></cfsilent>
 <cfoutput>
   <script>!window.google && document.write('<script src="https://maps.google.com/maps/api/js?sensor=false"><\/script>');</script>
-	<!---<script type="text/javascript" src="#$.event('pluginPath')#assets/js/mura-locations.js"></script>--->
 </cfoutput>

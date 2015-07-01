@@ -11,7 +11,7 @@
 </cfscript></cfsilent>
 <cfoutput>
 	<!-- gmap-wrapper -->
-	<div class="gmap-wrapper" id="gmap-wrapper-#local.mapCanvasID#">
+	<div class="gmap-outer-wrapper" id="gmap-outer-wrapper-#local.mapCanvasID#">
 
 		<!--- Category Filter --->
 			<cfif YesNoFormat(arguments.displayCategoryFilter)>
@@ -27,30 +27,35 @@
 					ArraySort(cats, 'textnocase', 'asc');
 				</cfscript>
 				<cfif ArrayLen(arguments.places) gt 1 and ArrayLen(cats) gt 1>
-					<div class="category-filters" id="category-filters-#local.mapCanvasID#">
-						<cfloop array="#cats#" index="cat">
-							<div class="category-filter-wrapper">
-								<label class="category-filter-label">
-									<input type="checkbox" class="category-filter-option" name="category-filter-option" value="#cat#" checked> #cat#
-								</label>
-							</div>
-						</cfloop>
+					<div class="gmap-header">
+						<h4 class="gmap-header-title">Filter Map</h4>
+						<div class="gmap-category-filters" id="gmap-category-filters-#local.mapCanvasID#">
+							<cfloop array="#cats#" index="cat">
+								<div class="gmap-category-filter-wrapper">
+									<label class="gmap-category-filter-label">
+										<input type="checkbox" class="gmap-category-filter-option" name="gmap-category-filter-option" value="#cat#" checked> <span class="gmap-category-filter-name">#cat#</span>
+									</label>
+								</div>
+							</cfloop>
+						</div>
 					</div>
 				</cfif>
 			</cfif>
 		<!--- /Category Filter --->
 
-		<!--- GMap Canvas --->
-			<div class="gmap-canvas" id="gmap-canvas-#local.mapCanvasID#">
-				<cfloop array="#arguments.places#" index="place">
-					<div class="marker" data-categories="#ArrayToList(place.categories)#" data-lat="#place.lat#" data-lng="#place.lng#" data-icon="#place.icon#" data-zindex="#place.zindex#">
-						<div class="marker-info">
-							#place.infowindow#
-						</div>
-					</div>				
-				</cfloop>
+		<!--- GMap --->
+			<div class="gmap-wrapper" id="gmap-wrapper-#local.mapCanvasID#">
+				<div class="gmap-canvas" id="gmap-canvas-#local.mapCanvasID#">
+					<cfloop array="#arguments.places#" index="place">
+						<div class="gmap-marker" data-categories="#ArrayToList(place.categories)#" data-lat="#place.lat#" data-lng="#place.lng#" data-icon="#place.icon#" data-zindex="#place.zindex#">
+							<div class="gmap-marker-info">
+								#place.infowindow#
+							</div>
+						</div>				
+					</cfloop>
+				</div>
 			</div>
-		<!--- /GMap Canvas --->
+		<!--- /GMap --->
 
 	</div>
 	<!-- /.gmap-wrapper -->
