@@ -12,7 +12,7 @@
     pluginName = 'MuraLocations'
     , package = 'MuraLocations'
     , loadPriority = 5
-    , version = '4.1.0'
+    , version = '4.0.0'
     , provider = 'Steve Withington'
     , providerURL = 'http://stephenwithington.com'
     , category = 'Application'
