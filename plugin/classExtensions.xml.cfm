@@ -226,19 +226,6 @@
 					optionLableList="" />
 
 				<attribute 
-					name="displayCategoryFilter"
-					label="Display Category Filter"
-					hint="If locations are categorized, should the map filter display?"
-					type="RadioGroup"
-					defaultValue="true"
-					required="false"
-					validation="None"
-					regex=""
-					message=""
-					optionList="false^true"
-					optionLabelList="No^Yes" />
-
-				<attribute 
 					name="displayDirections"
 					label="Display Directions"
 					hint="Should users be able to see directions to the location(s)?"

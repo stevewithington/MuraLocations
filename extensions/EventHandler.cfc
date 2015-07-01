@@ -80,7 +80,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				, postalCode = get$().content('postalCode')
 				, addressCountry = get$().content('addressCountry')
 				, locationNotes = get$().content('locationNotes')
-				, detailsURL = get$().content('url')
+				, detailsURL = getMapURL(latitude=get$().content('latitude'), longitude=get$().content('longitude'))
 				, mapURL = getMapURL(latitude=get$().content('latitude'), longitude=get$().content('longitude'))
 				, locationTelephone = get$().content('locationTelephone')
 				, locationFaxNumber = get$().content('locationFaxNumber')
@@ -93,7 +93,6 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			
 			ArrayAppend(local.places, local.place.gMapPoint());
 
-			local.displayCategoryFilter = YesNoFormat(get$().content('displayCategoryFilter'));
 			local.mapZoom = get$().content('mapZoom') == 'default' || !Len(get$().content('mapZoom'))
 				? 15
 				: get$().content('mapZoom');
@@ -105,7 +104,8 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				, mapWidth = get$().content('mapWidth')
 				, mapHeight = get$().content('mapHeight')
 				, mapZoom = local.mapZoom
-				, displayCategoryFilter = local.displayCategoryFilter
+				, displayDirections = YesNoFormat(get$().content('displayDirections'))
+				, displayCategoryFilter = false
 			);
 			
 			// if you don't need anything fancy, just use this:
@@ -191,10 +191,24 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			// No Errors, so we're good!
 			// If the content already has a Lat and Lng, then geoResponse won't be defined
 			if ( StructKeyExists(local, 'geoResponse') ) {
-				local.bean.setLatitude( local.geoResponse.results[1].geometry.location.lat );
-				local.bean.setLongitude( local.geoResponse.results[1].geometry.location.lng );
+				local.bean.setLatitude(local.geoResponse.results[1].geometry.location.lat);
+				local.bean.setLongitude(local.geoResponse.results[1].geometry.location.lng);
 			}
 		}
+	}
+
+	/**
+	* onAfterPageMuraLocationSave()
+	*/
+	public void function onAfterPageMuraLocationSave(required struct $) output=false {
+		setApplicationCache();
+	}
+
+	/**
+	* onAfterFolderMuraLocationsMapSave()
+	*/
+	public void function onAfterFolderMuraLocationsMapSave(required struct $) output=false {
+		setApplicationCache();
 	}
 
 	/**
@@ -217,15 +231,14 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		local.response = getCachedObject(local.objectKey);
 
 		if ( !Len(local.response) ) {
-			local.displayCategoryFilter = YesNoFormat(get$().content('displayCategoryFilter'));
-
 			local.response = dspLocationsMap(
 				mapType = get$().content('mapType')
 				, start = get$().event('start')
 				, mapWidth = get$().content('mapWidth')
 				, mapHeight = get$().content('mapHeight')
 				, mapZoom = get$().content('mapZoom')
-				, displayCategoryFilter = local.displayCategoryFilter
+				, displayDirections = get$().content('displayDirections')
+				, displayCategoryFilter = get$().content('displayCategoryFilter')
 			);
 
 			setCachedObject(local.objectKey, local.response);
@@ -400,6 +413,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 		, string mapZoom='default'
 		, string contentid=''
 		, array locations=[]
+		, boolean displayDirections=true
 		, boolean displayCategoryFilter=true
 	) output=false {
 		var local = {};
@@ -507,6 +521,7 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 			, mapWidth = arguments.mapWidth
 			, mapHeight = arguments.mapHeight
 			, mapZoom = arguments.mapZoom
+			, displayDirections = arguments.displayDirections
 			, displayCategoryFilter = arguments.displayCategoryFilter
 		);
 
@@ -792,6 +807,5 @@ component extends="mura.plugin.pluginGenericEventHandler" accessors=true output=
 				};
 			};
 		}
-
 
 }

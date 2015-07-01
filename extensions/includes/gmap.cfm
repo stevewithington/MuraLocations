@@ -57,8 +57,6 @@
 				</div>
 			<!--- /GMap --->
 
-			<!--- <a href="https://www.google.com/maps/?q=#esapiEncode('html_attr', local.place['lat'])#,#esapiEncode('html_attr', local.place['lng'])#" class="btn btn-link" target="_blank">View in Google Maps &raquo;</a> --->
-
 			<!--- Directions Form --->
 				<cfif StructKeyExists(arguments, 'displayDirections') and YesNoFormat(arguments.displayDirections)>
 					<!--- Directions Wrapper --->
