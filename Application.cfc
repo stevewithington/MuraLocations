@@ -11,20 +11,30 @@ component accessors=true output=false {
 
   property name='$';
 
+  this.pluginPath = GetDirectoryFromPath(GetCurrentTemplatePath());
+	this.muraroot = Left(this.pluginPath, Find('plugins', this.pluginPath) - 1);
+	this.depth = ListLen(RemoveChars(this.pluginPath,1, Len(this.muraroot)), '\/');  
+	this.includeroot = RepeatString('../', this.depth);
+
+
   include 'plugin/settings.cfm';
-  include '../../config/applicationSettings.cfm';
-  include '../../config/mappings.cfm';
-  include '../mappings.cfm';
+  this.muraAppConfigPath = this.includeroot & 'core/';
+	include this.muraAppConfigPath & 'appcfc/applicationSettings.cfm';
+
+  try {
+    include this.includeroot & 'config/mappings.cfm';
+    include this.includeroot & 'plugins/mappings.cfm';
+  } catch(any e) {}
 
   public any function onApplicationStart() {
-    include '../../config/appcfc/onApplicationStart_include.cfm';
+    include this.muraAppConfigPath &  '/appcfc/onApplicationStart_include.cfm';
     var $ = get$();
     return true;
   }
 
   public any function onRequestStart(required string targetPage) {
     var $ = get$();
-    include '../../config/appcfc/onRequestStart_include.cfm';
+    include this.muraAppConfigPath &  '/appcfc/onRequestStart_include.cfm';
 
     if ( StructKeyExists(url, $.globalConfig('appreloadkey')) ) {
       onApplicationStart();
